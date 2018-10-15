@@ -1,0 +1,332 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+using System.Data.SqlClient;
+
+
+namespace Divisions
+{
+    public partial class FDivisionsNavigation : Form
+    {
+        
+        private DataSet dsWorkers = new DataSet();
+        private int detartamentID = 1;
+        private int lvl = 0;
+        private string[] valuesWorker = new string[9];
+        BindingSource tblWorkersBS = new BindingSource();
+        private int structureID;
+        
+        
+
+        public FDivisionsNavigation()
+        {
+            InitializeComponent();
+
+            tvDivisions.BeforeSelect += tvDivisions_BeforeSelect;
+            tvDivisions.BeforeExpand += tvDivisions_BeforeExpand;
+            tvDivisions.AfterSelect += tvDivisions_AfterSelect;
+
+            FillDivisionsNodes();
+        }
+        public int DetartamentID
+        {
+            get
+            {
+                return detartamentID;
+            }
+            set
+            {
+                detartamentID = value;
+            }
+        }
+
+        public int Lvl
+        {
+            get
+            {
+                return lvl;
+            }
+            set
+            {
+                lvl = value;
+            }
+        }
+
+        public int StructureID
+        {
+            get
+            {
+                return structureID;
+            }
+            
+        }
+
+        private void tvDivisions_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            lb.Text = "Работники: " + e.Node.Text + " " + e.Node.Name + " " + e.Node.Tag;
+            DetartamentID = Convert.ToInt32(e.Node.Name);
+            Lvl = Convert.ToInt32(e.Node.Tag);
+
+            
+            if (Convert.ToInt32(e.Node.Tag) == 0)
+            {
+                dsWorkers.Clear();
+                dgvWorkers.DataSource = null;
+                tblWorkersBS.DataSource = null;
+                btnCreateWorker.Enabled = false;
+                btnChangeWorker.Enabled = false;
+                btnDeleteWorker.Enabled = false;
+                return;
+            }
+            btnCreateWorker.Enabled = true;
+            btnChangeWorker.Enabled = true;
+            btnDeleteWorker.Enabled = true;
+            GetWorkers();
+            //foreach (DataRow row in dsWorkers.Tables[0].Rows)
+            //{
+                //structureID = Convert.ToInt32(row["StructureID"]);
+            //}
+        }
+        
+        private void tvDivisions_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            e.Node.Nodes.Clear();
+            FillTreeDepartaments(e.Node, Convert.ToInt32(e.Node.Name), Convert.ToInt32(e.Node.Tag) + 1);
+        }
+
+        private void GetWorkers()
+        {
+            dsWorkers.Clear();
+            dgvWorkers.DataSource = null;
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand("Offices.uspGetWorkers", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int));
+                        sqlCommand.Parameters["@DepartamentID"].Value = DetartamentID;
+                        adapter.SelectCommand = sqlCommand;
+
+                        try
+                        {
+                            connection.Open();
+                            adapter.SelectCommand.ExecuteNonQuery();
+
+                            adapter.Fill(dsWorkers);
+                            dgvWorkers.DataSource = dsWorkers.Tables[0];
+                            tblWorkersBS.DataSource = dsWorkers.Tables[0];
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Запрошенные Работники не могут загрузиться на форму.");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void tvDivisions_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
+            e.Node.Nodes.Clear();
+            FillTreeDepartaments(e.Node, Convert.ToInt32(e.Node.Name), Convert.ToInt32(e.Node.Tag)+ 1);
+        }
+
+        private void FillDivisionsNodes()
+        {
+            DataSet dsRoots = new DataSet();
+            tvDivisions.Nodes.Clear();
+            FillDSRoots(dsRoots);
+
+            if (dsRoots.Tables.Count > 0)
+            {
+                foreach (DataRow row in dsRoots.Tables[0].Rows)
+                {
+                    TreeNode depRoot = new TreeNode(Convert.ToString(row["Title"]));
+                    int ancestorID = Convert.ToInt32(row["DepartamentID"]);
+                    depRoot.Name = Convert.ToString(ancestorID);
+                    depRoot.Tag = 0;
+                    FillTreeDepartaments(depRoot, ancestorID, 1);
+                    tvDivisions.Nodes.Add(depRoot);
+                }
+            }
+
+            if(tvDivisions.Nodes.Count == 0)
+            {
+                btnChangeDivision.Enabled = false;
+                btnDeleteDivision.Enabled = false;
+            }
+
+            btnChangeDivision.Enabled = true;
+            btnDeleteDivision.Enabled = true;
+        }
+
+        private void FillDSRoots(DataSet dsRoots)
+        {
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand("Offices.uspGetRoots", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+
+                        adapter.SelectCommand = sqlCommand;
+
+                        try
+                        {
+                            connection.Open();
+                            adapter.SelectCommand.ExecuteNonQuery();
+                            
+                            adapter.Fill(dsRoots);
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Запрошенные Отделения не могут загрузиться на форму.");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void FillTreeDepartaments(TreeNode depRoot, int ancestorID, int level)
+        {
+            DataSet dsTreePath = new DataSet();
+            FillDSTreePath(dsTreePath, ancestorID, level);
+            if (dsTreePath.Tables[0].Rows.Count.ToString() != "")
+            {
+                foreach (DataRow row in dsTreePath.Tables[0].Rows)
+                {
+                    TreeNode treePath = new TreeNode();
+                    treePath.Text = Convert.ToString(row["Title"]);
+                    treePath.Name = Convert.ToString(row["DepartamentID"]);
+                    treePath.Tag = Convert.ToInt32(row["Level"]);
+                    FillTreeDepartaments(treePath, Convert.ToInt32(row["DepartamentID"]), ++level);
+                    depRoot.Nodes.Add(treePath);
+                }
+            }
+        }
+
+        private void FillDSTreePath(DataSet dsTreePath, int ancestorID, int level)
+        {
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand("Offices.uspGetTreePath", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.Add(new SqlParameter("@Level", SqlDbType.Int));
+                        sqlCommand.Parameters["@Level"].Value = level;
+                        sqlCommand.Parameters.Add(new SqlParameter("@AncestorID", SqlDbType.Int));
+                        sqlCommand.Parameters["@AncestorID"].Value = ancestorID;
+
+                        adapter.SelectCommand = sqlCommand;
+
+                        try
+                        {
+                            connection.Open();
+                            adapter.SelectCommand.ExecuteNonQuery();
+                            
+                            adapter.Fill(dsTreePath);
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Запрошенные Отделы/подотделы не могут загрузиться на форму.");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void btnCreateDivision_Click(object sender, EventArgs e)
+        {
+            Form frmNewDiv = new FNewOrChangeDivision(tvDivisions.Nodes.Count > 0 ? true : false, DetartamentID, Lvl);
+            frmNewDiv.ShowDialog();
+            FillDivisionsNodes();
+        }
+
+        private void btnChangeDivision_Click(object sender, EventArgs e)
+        {
+            //Form frmChangeDiv = new FNewOrChangeDivision(tvDivisions.Nodes.Count > 0 ? true : false, DetartamentID, Lvl);
+            //frmChangeDiv.ShowDialog();
+        }
+
+        private void btnCreateWorker_Click(object sender, EventArgs e)
+        {
+            Form frm = new FNewOrChangeWorker(StructureID);
+            frm.ShowDialog();
+            GetWorkers();
+        }
+
+        private void btnChangeWorker_Click(object sender, EventArgs e)
+        {
+            Form frm = new FNewOrChangeWorker(valuesWorker);
+            frm.ShowDialog();
+        }
+
+        private void btnDeleteWorker_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult;
+            dialogResult = MessageBox.Show("Вы уверены, что хотите удалить?",  "Confirm Deletion", MessageBoxButtons.YesNo);
+            if(dialogResult == DialogResult.Yes)
+            {
+                using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+                {
+                    using (SqlDataAdapter adapter = new SqlDataAdapter())
+                    {
+                        adapter.DeleteCommand = new SqlCommand("DELETE FROM [Offices].[Workers] WHERE [WorkerID] = @WorkerID");
+                        adapter.DeleteCommand.Parameters.Add("@WorkerID", SqlDbType.Int).Value = dsWorkers.Tables[0].Rows[tblWorkersBS.Position][0];
+                        try
+                        {
+                            connection.Open();
+                            adapter.DeleteCommand.ExecuteNonQuery();
+                            dsWorkers.Clear();
+                            adapter.Fill(dsWorkers);
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Не может удалить выделенного Работника.");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+
+                    }
+                }
+            }
+        }
+
+        private void dgvWorkers_SelectionChanged(object sender, EventArgs e)
+        {
+            int i = 0;
+            foreach (DataGridViewRow row in dgvWorkers.SelectedRows)
+            {
+                valuesWorker[i] = row.Cells[i].Value.ToString();
+                i++;
+            }
+        }
+    }
+}
+

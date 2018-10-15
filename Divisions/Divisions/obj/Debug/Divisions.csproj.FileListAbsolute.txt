@@ -1,0 +1,12 @@
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.csprojAssemblyReference.cache
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.FDivisionsNavigation.resources
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.FNewOrChangeDivision.resources
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.FNewOrChangeWorker.resources
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.Properties.Resources.resources
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.csproj.GenerateResource.cache
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.csproj.CoreCompileInputs.cache
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\bin\Debug\Divisions.exe.config
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\bin\Debug\Divisions.exe
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\bin\Debug\Divisions.pdb
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.exe
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.pdb
