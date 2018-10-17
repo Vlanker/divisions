@@ -44,7 +44,6 @@ namespace Divisions
 
                         using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                         {
-                            
                             sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Value = FDivisionsNavigation.StructureID;
                             sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = tbPersNum.Text;
                             sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = tbFullName.Text;
@@ -61,21 +60,20 @@ namespace Divisions
                                 connection.Open();
                                 adapter.InsertCommand.ExecuteNonQuery();
                             }
-                            catch (Exception ex)
+                            catch 
                             {
-                                MessageBox.Show("Работник не добавлен." + ex.ToString());
+                                MessageBox.Show("Работник не добавлен.");
                             }
                             finally
                             {
                                 connection.Close();
                             }
                         }
-
-
-
                     }
                 }
+                this.Close();
             }
+            
         }
 
         private int GetSalary()

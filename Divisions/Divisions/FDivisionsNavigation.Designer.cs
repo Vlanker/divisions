@@ -192,11 +192,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvWorkers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvWorkers.Location = new System.Drawing.Point(3, 25);
+            this.dgvWorkers.MultiSelect = false;
             this.dgvWorkers.Name = "dgvWorkers";
             this.dgvWorkers.ReadOnly = true;
             this.dgvWorkers.Size = new System.Drawing.Size(543, 384);
             this.dgvWorkers.TabIndex = 0;
-            
             // 
             // FDivisionsNavigation
             // 
