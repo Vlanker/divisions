@@ -112,8 +112,6 @@
         private System.Windows.Forms.Button btnAddRoot;
         private System.Windows.Forms.Button btnAddBranch;
         private System.Windows.Forms.Button btnChange;
-        
-        private System.Windows.Forms.BindingSource departamentsBindingSource;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbTitle;
     }

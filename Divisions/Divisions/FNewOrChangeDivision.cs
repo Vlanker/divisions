@@ -14,35 +14,35 @@ namespace Divisions
 
     public partial class FNewOrChangeDivision : Form
     {
-        private int desedantID = -1;
-        private int lvl = -1;
+        private static int desedantID;
+        //private static int lvl;
 
         public FNewOrChangeDivision()
         {
             InitializeComponent();
+            desedantID = FDivisionsNavigation.DetartamentID;
         }
 
-        public FNewOrChangeDivision(bool isTVDivisionsNodesCounMoreZero, int depID, int lvl) : this()
+        public FNewOrChangeDivision(bool isTVDivisionsNodesCounMoreZero) : this()
         {
-            this.desedantID = depID;
-            this.lvl = lvl;
+            
 
-            if (!isTVDivisionsNodesCounMoreZero)
-            {
-                btnAddRoot.Enabled = true;
-                btnAddRoot.Visible = true;
-                btnAddBranch.Enabled = false;
-                btnAddBranch.Visible = true;
-            }
-            else
-            {
-                btnAddRoot.Enabled = true;
-                btnAddRoot.Visible = true;
-                btnAddBranch.Enabled = true;
-                btnAddBranch.Visible = true;
-            }
+            //if (!isTVDivisionsNodesCounMoreZero)
+            //{
+            //    btnAddRoot.Enabled = true;
+            //    btnAddRoot.Visible = true;
+            //    btnAddBranch.Enabled = false;
+            //    btnAddBranch.Visible = true;
+            //}
+            //else
+            //{
+            //    btnAddRoot.Enabled = true;
+            //    btnAddRoot.Visible = true;
+            //    btnAddBranch.Enabled = true;
+            //    btnAddBranch.Visible = true;
+            //}
 
-            btnChange.Visible = false;
+            //btnChange.Visible = false;
 
         }
 

@@ -15,15 +15,12 @@ namespace Divisions
 {
     public partial class FDivisionsNavigation : Form
     {
-        
+        private static int structureID;
+        private static int detartamentID = 1;
+        private static int lvl = 0;
+
         private DataSet dsWorkers = new DataSet();
-        private int detartamentID = 1;
-        private int lvl = 0;
-        private string[] valuesWorker = new string[9];
-        BindingSource tblWorkersBS = new BindingSource();
-        private int structureID;
-        
-        
+        private BindingSource tblWorkersBS = new BindingSource();
 
         public FDivisionsNavigation()
         {
@@ -35,31 +32,23 @@ namespace Divisions
 
             FillDivisionsNodes();
         }
-        public int DetartamentID
+        public static int DetartamentID
         {
             get
             {
                 return detartamentID;
             }
-            set
-            {
-                detartamentID = value;
-            }
         }
 
-        public int Lvl
+        public static int Lvl
         {
             get
             {
                 return lvl;
             }
-            set
-            {
-                lvl = value;
-            }
         }
 
-        public int StructureID
+        public static int StructureID
         {
             get
             {
@@ -70,10 +59,8 @@ namespace Divisions
 
         private void tvDivisions_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            lb.Text = "Работники: " + e.Node.Text + " " + e.Node.Name + " " + e.Node.Tag;
-            DetartamentID = Convert.ToInt32(e.Node.Name);
-            Lvl = Convert.ToInt32(e.Node.Tag);
-
+            detartamentID = Convert.ToInt32(e.Node.Name);
+            lvl = Convert.ToInt32(e.Node.Tag);
             
             if (Convert.ToInt32(e.Node.Tag) == 0)
             {
@@ -85,14 +72,11 @@ namespace Divisions
                 btnDeleteWorker.Enabled = false;
                 return;
             }
+            lb.Text = "Работники: " + e.Node.Text;
             btnCreateWorker.Enabled = true;
             btnChangeWorker.Enabled = true;
             btnDeleteWorker.Enabled = true;
             GetWorkers();
-            //foreach (DataRow row in dsWorkers.Tables[0].Rows)
-            //{
-                //structureID = Convert.ToInt32(row["StructureID"]);
-            //}
         }
         
         private void tvDivisions_BeforeExpand(object sender, TreeViewCancelEventArgs e)
@@ -113,17 +97,22 @@ namespace Divisions
                     {
                         sqlCommand.CommandType = CommandType.StoredProcedure;
                         sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int));
-                        sqlCommand.Parameters["@DepartamentID"].Value = DetartamentID;
+                        sqlCommand.Parameters["@DepartamentID"].Value = detartamentID;
                         adapter.SelectCommand = sqlCommand;
 
                         try
                         {
                             connection.Open();
                             adapter.SelectCommand.ExecuteNonQuery();
-
                             adapter.Fill(dsWorkers);
+                            structureID = Convert.ToInt32(dsWorkers.Tables[0].Rows[0]["StructureID"]);
+
                             dgvWorkers.DataSource = dsWorkers.Tables[0];
+                            dgvWorkers.Columns["WorkerID"].Visible = false;
+                            dgvWorkers.Columns["StructureID"].Visible = false;
+
                             tblWorkersBS.DataSource = dsWorkers.Tables[0];
+                            
                         }
                         catch
                         {
@@ -261,28 +250,29 @@ namespace Divisions
 
         private void btnCreateDivision_Click(object sender, EventArgs e)
         {
-            Form frmNewDiv = new FNewOrChangeDivision(tvDivisions.Nodes.Count > 0 ? true : false, DetartamentID, Lvl);
-            frmNewDiv.ShowDialog();
-            FillDivisionsNodes();
+
+            //Form frmNewDiv = new FNewOrChangeDivision();
+           // frmNewDiv.ShowDialog();
+            //FillDivisionsNodes();
         }
 
         private void btnChangeDivision_Click(object sender, EventArgs e)
         {
-            //Form frmChangeDiv = new FNewOrChangeDivision(tvDivisions.Nodes.Count > 0 ? true : false, DetartamentID, Lvl);
-            //frmChangeDiv.ShowDialog();
+            //TODO: Изменить отдел подотдел
         }
 
         private void btnCreateWorker_Click(object sender, EventArgs e)
         {
-            Form frm = new FNewOrChangeWorker(StructureID);
+            Form frm = new FNewOrChangeWorker();
             frm.ShowDialog();
             GetWorkers();
         }
 
         private void btnChangeWorker_Click(object sender, EventArgs e)
         {
-            Form frm = new FNewOrChangeWorker(valuesWorker);
-            frm.ShowDialog();
+            //TODO: изменить выделенного работника
+            //Form frm = new FNewOrChangeWorker();
+           // frm.ShowDialog();
         }
 
         private void btnDeleteWorker_Click(object sender, EventArgs e)
@@ -296,7 +286,8 @@ namespace Divisions
                     using (SqlDataAdapter adapter = new SqlDataAdapter())
                     {
                         adapter.DeleteCommand = new SqlCommand("DELETE FROM [Offices].[Workers] WHERE [WorkerID] = @WorkerID");
-                        adapter.DeleteCommand.Parameters.Add("@WorkerID", SqlDbType.Int).Value = dsWorkers.Tables[0].Rows[tblWorkersBS.Position][0];
+
+                        adapter.DeleteCommand.Parameters.Add("@WorkerID", SqlDbType.Int).Value = 0; //todo:
                         try
                         {
                             connection.Open();
@@ -315,16 +306,6 @@ namespace Divisions
 
                     }
                 }
-            }
-        }
-
-        private void dgvWorkers_SelectionChanged(object sender, EventArgs e)
-        {
-            int i = 0;
-            foreach (DataGridViewRow row in dgvWorkers.SelectedRows)
-            {
-                valuesWorker[i] = row.Cells[i].Value.ToString();
-                i++;
             }
         }
     }

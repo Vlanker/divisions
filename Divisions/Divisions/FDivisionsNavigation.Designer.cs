@@ -196,7 +196,7 @@
             this.dgvWorkers.ReadOnly = true;
             this.dgvWorkers.Size = new System.Drawing.Size(543, 384);
             this.dgvWorkers.TabIndex = 0;
-            this.dgvWorkers.SelectionChanged += new System.EventHandler(this.dgvWorkers_SelectionChanged);
+            
             // 
             // FDivisionsNavigation
             // 

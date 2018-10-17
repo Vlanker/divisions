@@ -8,71 +8,95 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 
 namespace Divisions
 {
     public partial class FNewOrChangeWorker : Form
     {
-        private int structureID;
-        string[] valuesWorkers;
         public FNewOrChangeWorker()
         {
             InitializeComponent();
+            btnComplite.Click += btnAddWorker_Click;
+            dtpBirthday.ValueChanged += new System.EventHandler(dtpBirthday_ValueChanged);
+            dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            dtpBirthday.CustomFormat = " ";
+            cbGender.SelectedIndex = 0;
         }
 
-        public FNewOrChangeWorker(int structureID):this()
+        private void dtpBirthday_ValueChanged(object sender, EventArgs e)
         {
-            this.structureID = structureID;
-            btnComplite.Click += btnAddFinishWorker_ClickInsert;
-        }
-        public FNewOrChangeWorker(string[] valuesWorkers) : this()
-        {
-            this.valuesWorkers = valuesWorkers;
-            btnComplite.Click += btnAddFinishWorker_ClickUpdate;
+            if (dtpBirthday.Format == System.Windows.Forms.DateTimePickerFormat.Custom)
+            {
+                dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            }
         }
 
-        private void btnAddFinishWorker_ClickUpdate(object sender, EventArgs e)
+        private void btnAddWorker_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        private void btnAddFinishWorker_ClickInsert(object sender, EventArgs e)
-        {
-           // if (IsTitlesValid())
-            //{
+            if (IsTitlesValid())
+            {
                 using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
                 {
                     using (SqlDataAdapter adapter = new SqlDataAdapter())
                     {
-                        adapter.InsertCommand = new SqlCommand("INSERT INTO [Offices].[Worker] (PersNum, FullName, Birthday, HiringDay, Salary, ProfArea, Gender) " +
-                                                               "VALUE(@StructureID, @PersNum, @FullName, @Birthday, @HiringDay, @Salary, @ProfArea, @Gender)");
-                        adapter.InsertCommand.Parameters.Add("@StructureID", SqlDbType.Int).Value = structureID;
-                        adapter.InsertCommand.Parameters.Add("@PersNum", SqlDbType.NVarChar, 50).Value = tbPersNum;
-                        adapter.InsertCommand.Parameters.Add("@FullName", SqlDbType.NVarChar, 50).Value = tbFullName;
-                        adapter.InsertCommand.Parameters.Add("@Birthday", SqlDbType.Date).Value = dtpBirthday;
-                        adapter.InsertCommand.Parameters.Add("@HiringDay", SqlDbType.Date).Value = dtpHiringDay;
-                        adapter.InsertCommand.Parameters.Add("@Salary", SqlDbType.Money).Value = tbSalary;
-                        adapter.InsertCommand.Parameters.Add("@ProfArea", SqlDbType.NVarChar, 250).Value = tbProfArea;
-                        adapter.InsertCommand.Parameters.Add("@Gender", SqlDbType.Bit).Value = cbGender;
+                        const string sql = "INSERT INTO [Offices].[Workers] (StructureID, PersNum, FullName, Birthday, HiringDay, Salary, ProfArea, Gender) VALUES (@StructureID, @PersNum, @FullName, @Birthday, @HiringDay, @Salary, @ProfArea, @Gender)";
 
-                        try
+                        using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                         {
-                            connection.Open();
-                            adapter.InsertCommand.ExecuteNonQuery();
+                            
+                            sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Value = FDivisionsNavigation.StructureID;
+                            sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = tbPersNum.Text;
+                            sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = tbFullName.Text;
+                            sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = dtpBirthday.Value.ToShortDateString();
+                            sqlCommand.Parameters.Add(new SqlParameter("@HiringDay", SqlDbType.Date)).Value = dtpHiringDay.Value.ToShortDateString();
+                            sqlCommand.Parameters.Add(new SqlParameter("@Salary", SqlDbType.Money)).Value = GetSalary();
+                            sqlCommand.Parameters.Add(new SqlParameter("@ProfArea", SqlDbType.NVarChar, 150)).Value = tbProfArea.Text;
+                            sqlCommand.Parameters.Add(new SqlParameter("@Gender", SqlDbType.Bit)).Value = Convert.ToBoolean(cbGender.SelectedIndex);
 
+                            adapter.InsertCommand = sqlCommand;
+
+                            try
+                            {
+                                connection.Open();
+                                adapter.InsertCommand.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Работник не добавлен." + ex.ToString());
+                            }
+                            finally
+                            {
+                                connection.Close();
+                            }
                         }
-                        catch
-                        {
-                            MessageBox.Show("Отделение не создано.");
-                        }
-                        finally
-                        {
-                            connection.Close();
-                        }
-                        
+
+
+
                     }
                 }
-            //}
+            }
+        }
+
+        private int GetSalary()
+        {
+            if(tbSalary.Text == "" || Regex.IsMatch(tbSalary.Text, @"^\D*$"))
+            {
+                return 0;
+            }
+            return Int32.Parse(tbSalary.Text);
+        }
+
+        private bool IsTitlesValid()
+        {
+            if(tbPersNum.Text == ""  ||
+               tbFullName.Text == "" || 
+               dtpBirthday.Format == System.Windows.Forms.DateTimePickerFormat.Custom)
+            {
+                MessageBox.Show("Введите Табельный номер, ФИО и выберите Дату рождения.");
+                return false;
+            }
+            return true;
         }
     }
 }
