@@ -307,9 +307,8 @@ namespace Divisions
 
         private bool IndexSelectedRowValid()
         {
-            if(dgvWorkers.CurrentCell.RowIndex == -1)
+            if(dgvWorkers.CurrentCell == null)
             {
-                indexSelectedRow = 0;
                 return false;
             }
             indexSelectedRow = dgvWorkers.CurrentCell.RowIndex;

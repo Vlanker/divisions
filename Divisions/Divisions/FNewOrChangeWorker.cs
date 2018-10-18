@@ -14,6 +14,7 @@ namespace Divisions
 {
     public partial class FNewOrChangeWorker : Form
     {
+        private int workerID;
         public FNewOrChangeWorker()
         {
             InitializeComponent();
@@ -27,21 +28,67 @@ namespace Divisions
         public FNewOrChangeWorker(object[] selectedRow): this()
         {
             btnComplite.Click += btnUpdateWorker_Click;
-            tbPersNum.Text    = selectedRow[2].ToString();
-            tbFullName.Text   = selectedRow[3].ToString();
-            dtpBirthday.Text  = selectedRow[4].ToString();
-            dtpHiringDay.Text = selectedRow[5].ToString();
-            tbSalary.Text     = selectedRow[6].ToString();
-            tbProfArea.Text   = selectedRow[7].ToString();
-            cbGender.SelectedIndex = Convert.ToInt32(selectedRow[7].ToString());
-
-
-
+            workerID = Int32.Parse(selectedRow[0].ToString());
+            tbPersNum.Text      = selectedRow[2].ToString();
+            tbFullName.Text     = selectedRow[3].ToString();
+            dtpBirthday.Value   = DateTime.Parse(selectedRow[4].ToString());
+            dtpHiringDay.Value  = DateTime.Parse(selectedRow[5].ToString());
+            tbSalary.Text       = selectedRow[6].ToString();
+            tbProfArea.Text     = selectedRow[7].ToString();
+            cbGender.SelectedIndex = selectedRow[7].ToString() == "false" ? 0 : 1;
         }
 
         private void btnUpdateWorker_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (IsTitlesValid())
+            {
+                using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+                {
+                    using (SqlDataAdapter adapter = new SqlDataAdapter())
+                    {
+                        const string sql = "UPDATE [Offices].[Worker] SET" +
+                            "[StructureID] = @StructureID," +
+                            "[PersNum] = @PersNum," +
+                            "[FullName] = @Fullname " +
+                            "[Birthday] = @Birthday, " +
+                            "[HiringDay] = @HiringDay, " +
+                            "[Salary] = @Salary, " +
+                            "[ProfArea] = @ProfArea, " +
+                            "[Gender] = @Gender, " +
+                            "WHERE [WorkerID] = @WokerID";
+
+                        using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                        {
+                            sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Value = FDivisionsNavigation.StructureID;
+                            sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = tbPersNum.Text;
+                            sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = tbFullName.Text;
+                            sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = dtpBirthday.Value.ToShortDateString();
+                            sqlCommand.Parameters.Add(new SqlParameter("@HiringDay", SqlDbType.Date)).Value = dtpHiringDay.Value.ToShortDateString();
+                            sqlCommand.Parameters.Add(new SqlParameter("@Salary", SqlDbType.Money)).Value = GetSalary();
+                            sqlCommand.Parameters.Add(new SqlParameter("@ProfArea", SqlDbType.NVarChar, 150)).Value = tbProfArea.Text;
+                            sqlCommand.Parameters.Add(new SqlParameter("@Gender", SqlDbType.Bit)).Value = Convert.ToBoolean(cbGender.SelectedIndex);
+                            sqlCommand.Parameters.Add(new SqlParameter("@WorkerID", SqlDbType.Bit)).Value = workerID;
+
+                            adapter.UpdateCommand = sqlCommand;
+
+                            try
+                            {
+                                connection.Open();
+                                adapter.UpdateCommand.ExecuteNonQuery();
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Работник не изменён");
+                            }
+                            finally
+                            {
+                                connection.Close();
+                            }
+                        }
+                    }
+                }
+                this.Close();
+            }
         }
 
         private void dtpBirthday_ValueChanged(object sender, EventArgs e)
@@ -96,13 +143,13 @@ namespace Divisions
             
         }
 
-        private int GetSalary()
+        private decimal GetSalary()
         {
             if(tbSalary.Text == "" || Regex.IsMatch(tbSalary.Text, @"^\D*$"))
             {
                 return 0;
             }
-            return Int32.Parse(tbSalary.Text);
+            return Convert.ToDecimal(tbSalary.Text);
         }
 
         private bool IsTitlesValid()
