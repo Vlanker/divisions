@@ -245,7 +245,9 @@ namespace Divisions
 
         private void btnChangeDivision_Click(object sender, EventArgs e)
         {
-            //TODO: Изменить отдел подотдел
+            Form updateDepartament = new FNewOrChangeDivision(DepartamentID, Title, Lvl);
+            updateDepartament.ShowDialog();
+            FillDivisionsNodes();
         }
 
         private void btnCreateWorker_Click(object sender, EventArgs e)
