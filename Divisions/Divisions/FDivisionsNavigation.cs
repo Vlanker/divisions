@@ -19,7 +19,8 @@ namespace Divisions
         public static int DetartamentID { get; set; }
         public static int Lvl { get; set; }
         public static int StructureID { get; set; }
-        public static int SelectedRow { get; set; }
+
+        private static int indexSelectedRow; 
 
         public FDivisionsNavigation()
         {
@@ -64,6 +65,7 @@ namespace Divisions
         {
             dsWorkers.Clear();
             dgvWorkers.DataSource = null;
+            
             using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
             {
                 using (SqlDataAdapter adapter = new SqlDataAdapter())
@@ -244,54 +246,74 @@ namespace Divisions
 
         private void btnChangeWorker_Click(object sender, EventArgs e)
         {
-            SelectedRow = dgvWorkers.CurrentCell.RowIndex;
-            
-            //Form frm = new FNewOrChangeWorker(selectedRow);
-            //frm.ShowDialog();
+            if (IndexSelectedRowValid())
+            {
+                object[] selectedRow = dsWorkers.Tables[0].Rows[indexSelectedRow].ItemArray;
+                Form frm = new FNewOrChangeWorker(selectedRow);
+                frm.ShowDialog();
+                GetWorkers();
+            }
         }
 
         private void btnDeleteWorker_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult;
             dialogResult = MessageBox.Show("Вы уверены, что хотите удалить выбраного Работника?",  "Confirm Deletion", MessageBoxButtons.YesNo);
-            if(dialogResult == DialogResult.Yes)
+
+            if (dialogResult == DialogResult.Yes)
             {
                 DeleteWorker();
             }
+
             GetWorkers();
         }
 
         private void DeleteWorker()
         {
-            SelectedRow = dgvWorkers.CurrentCell.RowIndex;
-
-            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            if (IndexSelectedRowValid())
             {
-                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
                 {
-                    const string sql = "DELETE FROM [Offices].[Workers] WHERE [WorkerID] = @WorkerID";
-                    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                    using (SqlDataAdapter adapter = new SqlDataAdapter())
                     {
-                        sqlCommand.Parameters.Add(new SqlParameter("@WorkerID", SqlDbType.Int)).Value = Convert.ToInt32(dsWorkers.Tables[0].Rows[SelectedRow]["WorkerID"]);
+                        const string sql = "DELETE FROM [Offices].[Workers] WHERE [WorkerID] = @WorkerID";
 
-                        adapter.DeleteCommand = sqlCommand;
-                        try
+                        using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                         {
-                            connection.Open();
-                            adapter.DeleteCommand.ExecuteNonQuery();
+                            sqlCommand.Parameters.Add(new SqlParameter("@WorkerID", SqlDbType.Int)).Value = Convert.ToInt32(dsWorkers.Tables[0].Rows[indexSelectedRow]["WorkerID"]);
+
+                            adapter.DeleteCommand = sqlCommand;
+                            try
+                            {
+                                connection.Open();
+                                adapter.DeleteCommand.ExecuteNonQuery();
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Выбранный Работник не удалён .");
+                            }
+                            finally
+                            {
+                                connection.Close();
+                            }
                         }
-                        catch
-                        {
-                            MessageBox.Show("Выбранный Работник не удалён .");
-                        }
-                        finally
-                        {
-                            connection.Close();
-                        }
+
                     }
-
                 }
             }
+
+            
+        }
+
+        private bool IndexSelectedRowValid()
+        {
+            if(dgvWorkers.CurrentCell.RowIndex == -1)
+            {
+                indexSelectedRow = 0;
+                return false;
+            }
+            indexSelectedRow = dgvWorkers.CurrentCell.RowIndex;
+            return true;
         }
     }
 }

@@ -24,6 +24,26 @@ namespace Divisions
             cbGender.SelectedIndex = 0;
         }
 
+        public FNewOrChangeWorker(object[] selectedRow): this()
+        {
+            btnComplite.Click += btnUpdateWorker_Click;
+            tbPersNum.Text    = selectedRow[2].ToString();
+            tbFullName.Text   = selectedRow[3].ToString();
+            dtpBirthday.Text  = selectedRow[4].ToString();
+            dtpHiringDay.Text = selectedRow[5].ToString();
+            tbSalary.Text     = selectedRow[6].ToString();
+            tbProfArea.Text   = selectedRow[7].ToString();
+            cbGender.SelectedIndex = Convert.ToInt32(selectedRow[7].ToString());
+
+
+
+        }
+
+        private void btnUpdateWorker_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         private void dtpBirthday_ValueChanged(object sender, EventArgs e)
         {
             if (dtpBirthday.Format == System.Windows.Forms.DateTimePickerFormat.Custom)
