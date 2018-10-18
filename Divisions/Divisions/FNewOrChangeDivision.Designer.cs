@@ -30,7 +30,7 @@
         {
             this.btnAddRoot = new System.Windows.Forms.Button();
             this.btnAddBranch = new System.Windows.Forms.Button();
-            this.btnChange = new System.Windows.Forms.Button();
+            this.btnUpdate = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tbTitle = new System.Windows.Forms.TextBox();
             this.lblTitle = new System.Windows.Forms.Label();
@@ -38,7 +38,6 @@
             // 
             // btnAddRoot
             // 
-            this.btnAddRoot.Enabled = false;
             this.btnAddRoot.Location = new System.Drawing.Point(12, 76);
             this.btnAddRoot.Name = "btnAddRoot";
             this.btnAddRoot.Size = new System.Drawing.Size(137, 23);
@@ -60,15 +59,16 @@
             this.btnAddBranch.Visible = false;
             this.btnAddBranch.Click += new System.EventHandler(this.btnAddBranch_Click);
             // 
-            // btnChange
+            // btnUpdate
             // 
-            this.btnChange.Location = new System.Drawing.Point(433, 76);
-            this.btnChange.Name = "btnChange";
-            this.btnChange.Size = new System.Drawing.Size(66, 23);
-            this.btnChange.TabIndex = 4;
-            this.btnChange.Text = "Готово";
-            this.btnChange.UseVisualStyleBackColor = true;
-            this.btnChange.Visible = false;
+            this.btnUpdate.Location = new System.Drawing.Point(433, 76);
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.Size = new System.Drawing.Size(66, 23);
+            this.btnUpdate.TabIndex = 4;
+            this.btnUpdate.Text = "Готово";
+            this.btnUpdate.UseVisualStyleBackColor = true;
+            this.btnUpdate.Visible = false;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // label1
             // 
@@ -103,7 +103,7 @@
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.tbTitle);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.btnChange);
+            this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnAddBranch);
             this.Controls.Add(this.btnAddRoot);
             this.Cursor = System.Windows.Forms.Cursors.Default;
@@ -118,7 +118,7 @@
         #endregion
         private System.Windows.Forms.Button btnAddRoot;
         private System.Windows.Forms.Button btnAddBranch;
-        private System.Windows.Forms.Button btnChange;
+        private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbTitle;
         private System.Windows.Forms.Label lblTitle;

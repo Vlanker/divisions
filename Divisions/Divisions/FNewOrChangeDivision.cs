@@ -16,16 +16,14 @@ namespace Divisions
     {
         private int departamentID;
         private int lvl;
+        private string title;
 
         public FNewOrChangeDivision()
         {
             InitializeComponent();
-            
-                btnAddRoot.Enabled = true;
-                btnAddRoot.Visible = true;
-                btnAddBranch.Enabled = false;
-                btnAddBranch.Visible = true;
                 
+            btnAddRoot.Visible = true;
+            btnAddBranch.Visible = true;
         }
 
         public FNewOrChangeDivision(int departamentID, int lvl): this()
@@ -34,6 +32,17 @@ namespace Divisions
             this.lvl = lvl;
             lblTitle.Text = "Добавить отдел/ подотдел в " + FDivisionsNavigation.Title;
             btnAddBranch.Enabled = true;
+        }
+
+        public FNewOrChangeDivision(int departamentID, string title, int lvl) : this()
+        {
+            this.departamentID = departamentID;
+            this.title = title;
+            this.lvl = lvl;
+            btnAddRoot.Visible = false;
+            btnAddBranch.Visible = false;
+            btnUpdate.Visible = true;
+            tbTitle.Text = title;
         }
 
         private void btnAddRoot_Click(object sender, EventArgs e)
@@ -126,6 +135,40 @@ namespace Divisions
                 this.Close();
             }
 
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            if (IsTitleValid())
+            {
+                using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+                {
+                    const string sql = "UPDATE [Offices].[Departaments] SET [Title] = @Title WHERE [DepartamentID] = @DepartamentID";
+
+                    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                    {
+                        sqlCommand.CommandType = CommandType.Text;
+                        sqlCommand.Parameters.Add(new SqlParameter("@Title", SqlDbType.NVarChar, 50)).Value = tbTitle.Text;
+                        sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = departamentID;
+
+                        try
+                        {
+                            connection.Open();
+                            sqlCommand.ExecuteNonQuery();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Элемент не изменён.");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+
+                }
+                this.Close();
+            }
         }
     }
 }
