@@ -21,6 +21,8 @@ namespace Divisions
         public static int Lvl { get; set; }
         public static int StructureID { get; set; }
         public static bool IsTVDepartamensNull { get; set; }
+        public static Dictionary<int, int> DepartamentIDStructureID = new Dictionary<int, int>();
+
 
         private static int indexSelectedRow; 
 
@@ -33,6 +35,7 @@ namespace Divisions
             tvDivisions.AfterSelect += tvDivisions_AfterSelect;
             DepartamentID = 1;
             Lvl = 0;
+            
 
             FillDivisionsNodes();
         }
@@ -43,6 +46,7 @@ namespace Divisions
             DepartamentID = Convert.ToInt32(e.Node.Name);
             Lvl = Convert.ToInt32(e.Node.Tag);
             Title = e.Node.Text;
+            
             if (Convert.ToInt32(e.Node.Tag) == 0)
             {
                 dsWorkers.Clear();
@@ -58,6 +62,7 @@ namespace Divisions
             btnDeleteWorker.Enabled = true;
             GetWorkers();
         }
+
         
         private void tvDivisions_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
@@ -178,6 +183,7 @@ namespace Divisions
         {
             DataSet dsTreePath = new DataSet();
             FillDSTreePath(dsTreePath, ancestorID, level);
+            
             if (dsTreePath.Tables[0].Rows.Count.ToString() != "")
             {
                 foreach (DataRow row in dsTreePath.Tables[0].Rows)
@@ -186,6 +192,11 @@ namespace Divisions
                     treePath.Text = row["Title"].ToString();
                     treePath.Name = row["DepartamentID"].ToString();
                     treePath.Tag = Convert.ToInt32(row["Level"]);
+                    try
+                    {
+                        DepartamentIDStructureID.Add(Convert.ToInt32(row["DepartamentID"]), Convert.ToInt32(row["StructureID"]));
+                    }
+                    catch { }
                     FillTreeDepartaments(treePath, Convert.ToInt32(row["DepartamentID"]), ++level);
                     depRoot.Nodes.Add(treePath);
                 }
@@ -346,7 +357,50 @@ namespace Divisions
 
         private void btnDeleteDivision_Click(object sender, EventArgs e)
         {
+            if (tvDivisions.SelectedNode != null)
+            {
+                DialogResult dialogResult;
+                dialogResult = MessageBox.Show("Вы уверены, что хотите удалить ?", "Confirm Deletion", MessageBoxButtons.YesNo);
 
+                if (dialogResult == DialogResult.Yes)
+                {
+                    DeleteDepartament();
+                }
+
+                GetWorkers();
+            }
+        }
+
+        private void DeleteDepartament()
+        {
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                {
+                    const string sql = "DELETE FROM [Offices].[Workers] WHERE [WorkerID] = @WorkerID";
+
+                    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                    {
+                        sqlCommand.Parameters.Add(new SqlParameter("@WorkerID", SqlDbType.Int)).Value = Convert.ToInt32(dsWorkers.Tables[0].Rows[indexSelectedRow]["WorkerID"]);
+
+                        adapter.DeleteCommand = sqlCommand;
+                        try
+                        {
+                            connection.Open();
+                            adapter.DeleteCommand.ExecuteNonQuery();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Выбранный Работник не удалён .");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+
+                }
+            }
         }
     }
 }

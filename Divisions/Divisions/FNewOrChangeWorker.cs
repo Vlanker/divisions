@@ -15,6 +15,7 @@ namespace Divisions
     public partial class FNewOrChangeWorker : Form
     {
         private int workerID;
+        private int structureID;
 
         public FNewOrChangeWorker()
         {
@@ -102,7 +103,7 @@ namespace Divisions
                     {
                         sqlCommand.CommandType = CommandType.Text;
 
-                        sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Value = FDivisionsNavigation.StructureID;
+                        sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Value = GetStructureID();
                         sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = tbPersNum.Text;
                         sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = tbFullName.Text;
                         sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = dtpBirthday.Value.ToShortDateString();
@@ -130,6 +131,15 @@ namespace Divisions
                 this.Close();
             }
             
+        }
+
+        private int GetStructureID()
+        {
+            if(FDivisionsNavigation.StructureID == 0)
+            {
+                return FDivisionsNavigation.DepartamentIDStructureID[FDivisionsNavigation.DepartamentID]; 
+            }
+            return FDivisionsNavigation.StructureID;
         }
 
         private decimal GetSalary()
