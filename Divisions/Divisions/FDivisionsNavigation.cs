@@ -314,6 +314,20 @@ namespace Divisions
             indexSelectedRow = dgvWorkers.CurrentCell.RowIndex;
             return true;
         }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            bool bHandled = false;
+            
+            switch (keyData)
+            {
+                case Keys.F5:
+                    FillDivisionsNodes();
+                    bHandled = true;
+                    break;
+            }
+            return bHandled;
+        }
     }
 }
 
