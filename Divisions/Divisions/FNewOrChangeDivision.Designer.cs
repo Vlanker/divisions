@@ -33,6 +33,7 @@
             this.btnChange = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tbTitle = new System.Windows.Forms.TextBox();
+            this.lblTitle = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnAddRoot
@@ -61,12 +62,11 @@
             // 
             // btnChange
             // 
-            this.btnChange.Enabled = false;
-            this.btnChange.Location = new System.Drawing.Point(424, 76);
+            this.btnChange.Location = new System.Drawing.Point(433, 76);
             this.btnChange.Name = "btnChange";
-            this.btnChange.Size = new System.Drawing.Size(75, 23);
+            this.btnChange.Size = new System.Drawing.Size(66, 23);
             this.btnChange.TabIndex = 4;
-            this.btnChange.Text = "Изменить";
+            this.btnChange.Text = "Готово";
             this.btnChange.UseVisualStyleBackColor = true;
             this.btnChange.Visible = false;
             // 
@@ -86,12 +86,21 @@
             this.tbTitle.Size = new System.Drawing.Size(486, 20);
             this.tbTitle.TabIndex = 6;
             // 
+            // lblTitle
+            // 
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Location = new System.Drawing.Point(152, 105);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(0, 13);
+            this.lblTitle.TabIndex = 7;
+            // 
             // FNewOrChangeDivision
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(510, 127);
+            this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.tbTitle);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnChange);
@@ -112,5 +121,6 @@
         private System.Windows.Forms.Button btnChange;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbTitle;
+        private System.Windows.Forms.Label lblTitle;
     }
 }

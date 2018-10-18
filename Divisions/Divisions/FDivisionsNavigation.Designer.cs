@@ -104,6 +104,7 @@
             this.btnDeleteDivision.TabIndex = 2;
             this.btnDeleteDivision.Text = "Удалить";
             this.btnDeleteDivision.UseVisualStyleBackColor = true;
+            this.btnDeleteDivision.Click += new System.EventHandler(this.btnDeleteDivision_Click);
             // 
             // btnCreateDivision
             // 

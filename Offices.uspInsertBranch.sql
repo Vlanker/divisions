@@ -10,11 +10,11 @@ VALUES (@Title)
 SELECT @DepID = SCOPE_IDENTITY();  
 
 INSERT INTO [Offices].[Structure] ([AncestorID], [DescendarID],[Level])
-SELECT S.[AncestorID], @DepID, S.[Level]+1
+SELECT * FROM (SELECT S.[AncestorID], @DepID, S.[Level] + 1
 FROM [Structure] AS S
 WHERE S.[DescendarID] = @DesedantID
 UNION ALL
-SELECT @DepID, @DepID, @Level
+SELECT @DepID, @DepID, @Level) as tmp
 
 COMMIT TRANSACTION   
 END
