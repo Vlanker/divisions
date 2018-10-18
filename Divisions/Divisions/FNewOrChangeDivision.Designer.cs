@@ -78,7 +78,6 @@
             this.label1.Size = new System.Drawing.Size(60, 13);
             this.label1.TabIndex = 5;
             this.label1.Text = "Название:";
-            
             // 
             // tbTitle
             // 
@@ -86,7 +85,6 @@
             this.tbTitle.Name = "tbTitle";
             this.tbTitle.Size = new System.Drawing.Size(486, 20);
             this.tbTitle.TabIndex = 6;
-            
             // 
             // FNewOrChangeDivision
             // 
@@ -100,7 +98,7 @@
             this.Controls.Add(this.btnAddBranch);
             this.Controls.Add(this.btnAddRoot);
             this.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "FNewOrChangeDivision";
             this.Text = "Отделения";
             this.ResumeLayout(false);
