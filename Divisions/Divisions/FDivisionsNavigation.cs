@@ -16,9 +16,11 @@ namespace Divisions
     public partial class FDivisionsNavigation : Form
     {
         private DataSet dsWorkers = new DataSet();
-        public static int DetartamentID { get; set; }
+        public static int DepartamentID { get; set; }
+        public static string Title { get; set; }
         public static int Lvl { get; set; }
         public static int StructureID { get; set; }
+        public static bool IsTVDepartamensNull { get; set; }
 
         private static int indexSelectedRow; 
 
@@ -29,6 +31,8 @@ namespace Divisions
             tvDivisions.BeforeSelect += tvDivisions_BeforeSelect;
             tvDivisions.BeforeExpand += tvDivisions_BeforeExpand;
             tvDivisions.AfterSelect += tvDivisions_AfterSelect;
+            DepartamentID = 1;
+            Lvl = 0;
 
             FillDivisionsNodes();
         }
@@ -36,9 +40,9 @@ namespace Divisions
         private void tvDivisions_AfterSelect(object sender, TreeViewEventArgs e)
         {
             lb.Text = "Работники:";
-            DetartamentID = Convert.ToInt32(e.Node.Name);
+            DepartamentID = Convert.ToInt32(e.Node.Name);
             Lvl = Convert.ToInt32(e.Node.Tag);
-            
+            Title = e.Node.Text;
             if (Convert.ToInt32(e.Node.Tag) == 0)
             {
                 dsWorkers.Clear();
@@ -74,7 +78,7 @@ namespace Divisions
                     {
                         sqlCommand.CommandType = CommandType.StoredProcedure;
                         sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int));
-                        sqlCommand.Parameters["@DepartamentID"].Value = DetartamentID;
+                        sqlCommand.Parameters["@DepartamentID"].Value = DepartamentID;
                         adapter.SelectCommand = sqlCommand;
 
                         try
@@ -112,15 +116,17 @@ namespace Divisions
             DataSet dsRoots = new DataSet();
             tvDivisions.Nodes.Clear();
             FillDSRoots(dsRoots);
-
+            IsTVDepartamensNull = true;
             if (dsRoots.Tables.Count > 0)
             {
                 foreach (DataRow row in dsRoots.Tables[0].Rows)
                 {
                     TreeNode depRoot = new TreeNode(row["Title"].ToString());
                     int ancestorID = Convert.ToInt32(row["DepartamentID"]);
+                    DepartamentID = ancestorID;
                     depRoot.Name = ancestorID.ToString();
                     depRoot.Tag = 0;
+                    IsTVDepartamensNull = false;
                     FillTreeDepartaments(depRoot, ancestorID, 1);
                     tvDivisions.Nodes.Add(depRoot);
                 }
@@ -224,10 +230,17 @@ namespace Divisions
 
         private void btnCreateDivision_Click(object sender, EventArgs e)
         {
+            if (tvDivisions.SelectedNode == null)
+            {
+                Form frmNewRoot = new FNewOrChangeDivision();
+                frmNewRoot.ShowDialog();
+                FillDivisionsNodes();
+                return;
+            }
+            Form frmNewDivElement = new FNewOrChangeDivision(DepartamentID, Lvl);
+            frmNewDivElement.ShowDialog();
+            FillDivisionsNodes();
 
-            //Form frmNewDiv = new FNewOrChangeDivision();
-           // frmNewDiv.ShowDialog();
-            //FillDivisionsNodes();
         }
 
         private void btnChangeDivision_Click(object sender, EventArgs e)
@@ -327,6 +340,11 @@ namespace Divisions
                     break;
             }
             return bHandled;
+        }
+
+        private void btnDeleteDivision_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
