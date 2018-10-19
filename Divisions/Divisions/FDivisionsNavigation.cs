@@ -46,7 +46,8 @@ namespace Divisions
             DepartamentID = Convert.ToInt32(e.Node.Name);
             Lvl = Convert.ToInt32(e.Node.Tag);
             Title = e.Node.Text;
-            GetStructureID();
+            SetStructureID();
+
             if (Convert.ToInt32(e.Node.Tag) == 0)
             {
                 dsWorkers.Clear();
@@ -64,7 +65,7 @@ namespace Divisions
             GetWorkers();
         }
 
-        private void GetStructureID()
+        private void SetStructureID()
         {
             using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
             {
@@ -299,8 +300,6 @@ namespace Divisions
             GetWorkers();
         }
 
-         
-
         private void btnChangeWorker_Click(object sender, EventArgs e)
         {
             if (IndexSelectedRowValid())
@@ -398,6 +397,7 @@ namespace Divisions
 
                 if (dialogResult == DialogResult.Yes)
                 {
+                    
                     DeleteDepartament();
                 }
 
@@ -407,7 +407,11 @@ namespace Divisions
 
         private void DeleteDepartament()
         {
-            MessageBox.Show(tvDivisions.SelectedNode.Nodes.ToString());
+            foreach (Enumerable item in tvDivisions.SelectedNode.Nodes)
+            {
+                MessageBox.Show(item.ToString());
+                
+            }
             
         }
 
