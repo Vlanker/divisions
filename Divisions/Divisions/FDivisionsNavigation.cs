@@ -46,7 +46,7 @@ namespace Divisions
             DepartamentID = Convert.ToInt32(e.Node.Name);
             Lvl = Convert.ToInt32(e.Node.Tag);
             Title = e.Node.Text;
-            SetStructureID();
+            SetStructureID(DepartamentID);
 
             if (Convert.ToInt32(e.Node.Tag) == 0)
             {
@@ -65,7 +65,7 @@ namespace Divisions
             GetWorkers();
         }
 
-        private void SetStructureID()
+        private void SetStructureID(int departamentID)
         {
             using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
             {
@@ -73,7 +73,7 @@ namespace Divisions
                 using (SqlCommand sqlCommand = new SqlCommand("Offices.uspGetStructureID", connection))
                 {
                     sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = DepartamentID;
+                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = departamentID;
                     sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Direction = ParameterDirection.Output;
 
                     try
@@ -398,21 +398,25 @@ namespace Divisions
                 if (dialogResult == DialogResult.Yes)
                 {
                     
-                    DeleteDepartament();
+                    DeleteDepartament(tvDivisions.SelectedNode);
                 }
 
                 GetWorkers();
             }
         }
 
-        private void DeleteDepartament()
+        private void DeleteDepartament(TreeNode selectedNode)
         {
-            foreach (Enumerable item in tvDivisions.SelectedNode.Nodes)
-            {
-                MessageBox.Show(item.ToString());
-                
+            MessageBox.Show(selectedNode.ToString());
+            if (selectedNode.Nodes != null) {
+                foreach (TreeNode item in selectedNode.Nodes)
+                {
+                    DeleteDepartament(item);
+                    SetStructureID(Convert.ToInt32(item.Name));
+                    MessageBox.Show(StructureID.ToString());
+                    //DeleteWorkers()
+                }
             }
-            
         }
 
         private void DeleteWorkers()
