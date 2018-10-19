@@ -15,10 +15,11 @@ namespace Divisions
     public partial class FNewOrChangeWorker : Form
     {
         private int workerID;
-
+        
         public FNewOrChangeWorker()
         {
             InitializeComponent();
+
             btnComplite.Click += btnAddWorker_Click;
             dtpBirthday.ValueChanged += new System.EventHandler(dtpBirthday_ValueChanged);
             dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Custom;

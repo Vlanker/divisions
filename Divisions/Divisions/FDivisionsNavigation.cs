@@ -21,8 +21,8 @@ namespace Divisions
         public static int Lvl { get; set; }
         public static int StructureID { get; set; }
         public static bool IsTVDepartamensNull { get; set; }
-
-        private static int indexSelectedRow; 
+        private static int indexSelectedRow;
+        private int deleteCount;
 
         public FDivisionsNavigation()
         {
@@ -33,7 +33,7 @@ namespace Divisions
             tvDivisions.AfterSelect += tvDivisions_AfterSelect;
             DepartamentID = 1;
             Lvl = 0;
-
+            
             FillDivisionsNodes();
         }
 
@@ -43,6 +43,8 @@ namespace Divisions
             DepartamentID = Convert.ToInt32(e.Node.Name);
             Lvl = Convert.ToInt32(e.Node.Tag);
             Title = e.Node.Text;
+            SetStructureIDSQL(DepartamentID);
+
             if (Convert.ToInt32(e.Node.Tag) == 0)
             {
                 dsWorkers.Clear();
@@ -52,13 +54,44 @@ namespace Divisions
                 btnDeleteWorker.Enabled = false;
                 return;
             }
+
             lb.Text = "Работники: " + e.Node.Text;
             btnCreateWorker.Enabled = true;
             btnChangeWorker.Enabled = true;
             btnDeleteWorker.Enabled = true;
             GetWorkers();
         }
-        
+
+        private void SetStructureIDSQL(int departamentID)
+        {
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+
+                using (SqlCommand sqlCommand = new SqlCommand("Offices.uspGetStructureID", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = departamentID;
+                    sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Direction = ParameterDirection.Output;
+
+                    try
+                    {
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        
+                        StructureID = (int)sqlCommand.Parameters["@StructureID"].Value;
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Номер из таблицы Structure не получен.");
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+        }
+
         private void tvDivisions_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             e.Node.Nodes.Clear();
@@ -86,7 +119,6 @@ namespace Divisions
                             connection.Open();
                             adapter.SelectCommand.ExecuteNonQuery();
                             adapter.Fill(dsWorkers);
-                            StructureID = Convert.ToInt32(dsWorkers.Tables[0].Rows[0]["StructureID"]);
 
                             dgvWorkers.DataSource = dsWorkers.Tables[0];
                             dgvWorkers.Columns["WorkerID"].Visible = false;
@@ -115,19 +147,23 @@ namespace Divisions
         {
             DataSet dsRoots = new DataSet();
             tvDivisions.Nodes.Clear();
-            FillDSRoots(dsRoots);
+            FillDSRootsDSQL(dsRoots);
             IsTVDepartamensNull = true;
+
             if (dsRoots.Tables.Count > 0)
             {
                 foreach (DataRow row in dsRoots.Tables[0].Rows)
                 {
                     TreeNode depRoot = new TreeNode(row["Title"].ToString());
-                    int ancestorID = Convert.ToInt32(row["DepartamentID"]);
-                    DepartamentID = ancestorID;
-                    depRoot.Name = ancestorID.ToString();
+                    
+                    DepartamentID = Convert.ToInt32(row["DepartamentID"]);
+                    
+                    depRoot.Name = DepartamentID.ToString();
                     depRoot.Tag = 0;
+
                     IsTVDepartamensNull = false;
-                    FillTreeDepartaments(depRoot, ancestorID, 1);
+                    FillTreeDepartaments(depRoot, DepartamentID, 1);
+                    
                     tvDivisions.Nodes.Add(depRoot);
                 }
             }
@@ -142,7 +178,7 @@ namespace Divisions
             btnDeleteDivision.Enabled = true;
         }
 
-        private void FillDSRoots(DataSet dsRoots)
+        private void FillDSRootsDSQL(DataSet dsRoots)
         {
             using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
             {
@@ -177,7 +213,8 @@ namespace Divisions
         private void FillTreeDepartaments(TreeNode depRoot, int ancestorID, int level)
         {
             DataSet dsTreePath = new DataSet();
-            FillDSTreePath(dsTreePath, ancestorID, level);
+            FillDSTreePatSQL(dsTreePath, ancestorID, level);
+            
             if (dsTreePath.Tables[0].Rows.Count.ToString() != "")
             {
                 foreach (DataRow row in dsTreePath.Tables[0].Rows)
@@ -186,13 +223,15 @@ namespace Divisions
                     treePath.Text = row["Title"].ToString();
                     treePath.Name = row["DepartamentID"].ToString();
                     treePath.Tag = Convert.ToInt32(row["Level"]);
+                                       
                     FillTreeDepartaments(treePath, Convert.ToInt32(row["DepartamentID"]), ++level);
+                    
                     depRoot.Nodes.Add(treePath);
                 }
             }
         }
 
-        private void FillDSTreePath(DataSet dsTreePath, int ancestorID, int level)
+        private void FillDSTreePatSQL(DataSet dsTreePath, int ancestorID, int level)
         {
             using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
             {
@@ -240,7 +279,6 @@ namespace Divisions
             Form frmNewDivElement = new FNewOrChangeDivision(DepartamentID, Lvl);
             frmNewDivElement.ShowDialog();
             FillDivisionsNodes();
-
         }
 
         private void btnChangeDivision_Click(object sender, EventArgs e)
@@ -257,8 +295,6 @@ namespace Divisions
             GetWorkers();
         }
 
-         
-
         private void btnChangeWorker_Click(object sender, EventArgs e)
         {
             if (IndexSelectedRowValid())
@@ -272,18 +308,21 @@ namespace Divisions
 
         private void btnDeleteWorker_Click(object sender, EventArgs e)
         {
-            DialogResult dialogResult;
-            dialogResult = MessageBox.Show("Вы уверены, что хотите удалить выбраного Работника?",  "Confirm Deletion", MessageBoxButtons.YesNo);
-
-            if (dialogResult == DialogResult.Yes)
+            if (dgvWorkers.SelectedRows != null)
             {
-                DeleteWorker();
+                DialogResult dialogResult;
+                dialogResult = MessageBox.Show("Вы уверены, что хотите удалить выбраного Работника?", "Confirm Deletion", MessageBoxButtons.YesNo);
+
+                if (dialogResult == DialogResult.Yes)
+                {
+                    DeleteWorkerSQL();
+                }
+
+                GetWorkers();
             }
-
-            GetWorkers();
         }
-
-        private void DeleteWorker()
+       
+        private void DeleteWorkerSQL()
         {
             if (IndexSelectedRowValid())
             {
@@ -312,12 +351,9 @@ namespace Divisions
                                 connection.Close();
                             }
                         }
-
                     }
                 }
             }
-
-            
         }
 
         private bool IndexSelectedRowValid()
@@ -346,7 +382,195 @@ namespace Divisions
 
         private void btnDeleteDivision_Click(object sender, EventArgs e)
         {
+            if (tvDivisions.SelectedNode != null)
+            {
+                DialogResult dialogResult;
+                dialogResult = MessageBox.Show($"Вы уверены, что хотите удалить {Title}?", "Confirm Deletion", MessageBoxButtons.YesNo);
 
+                if (dialogResult == DialogResult.Yes)
+                {
+                    DeleteDepartament();
+                }
+
+                FillDivisionsNodes();
+            }
+        }
+
+        private void DeleteDepartament()
+        {
+            deleteCount = 0;
+            DeleteWorkersOnSelectedDepartament(tvDivisions.SelectedNode);
+
+            if (deleteCount == 0)
+            {
+                DeleteSelectedDepartamentFromStructureSQL();
+                DeleteSelectedDepartamentFromDepartamentsSQL();
+                return;
+            }
+            DeleteSubtreeSQLAndFromDepartaments();
+           
+        }
+
+        private void DeleteSubtreeSQLAndFromDepartaments()
+        {
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand("Offices.uspDeleteSubtree", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = DepartamentID;
+
+                        adapter.DeleteCommand = sqlCommand;
+                        try
+                        {
+                            connection.Open();
+                            adapter.DeleteCommand.ExecuteNonQuery();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Дерево Отделов/подотделов не удалены из Structure.");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+                }
+            }
+            DeleteSubTreeFromDepartaments(tvDivisions.SelectedNode);
+        }
+
+        private void DeleteSubTreeFromDepartaments(TreeNode selectedNode)
+        {   if (selectedNode.Nodes != null)
+
+                foreach (TreeNode treeNode in selectedNode.Nodes)
+                {
+                    DeleteSubTreeFromDepartaments(treeNode);
+                    DepartamentID = Convert.ToInt32(treeNode.Name);
+                    DeleteSelectedDepartamentFromDepartamentsSQL();
+                    return;
+                }
+            DepartamentID = Convert.ToInt32(selectedNode.Name);
+            DeleteSelectedDepartamentFromDepartamentsSQL();
+        }
+
+        private void DeleteSelectedDepartamentFromStructureSQL()
+        {
+
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                {
+                    const string sql = "DELETE FROM [Offices].[Structure] WHERE [DescendarID] = @DepartamentID";
+
+                    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                    {
+                        sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = DepartamentID;
+
+                        adapter.DeleteCommand = sqlCommand;
+                        try
+                        {
+                            connection.Open();
+                            adapter.DeleteCommand.ExecuteNonQuery();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Отдел/подотдел не удалён Structure.");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DeleteSelectedDepartamentFromDepartamentsSQL()
+        {
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                {
+                    const string sql = "DELETE FROM [Offices].[Departaments] WHERE [DepartamentID] = @DepartamentID";
+
+                    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                    {
+                        sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = DepartamentID;
+
+                        adapter.DeleteCommand = sqlCommand;
+                        try
+                        {
+                            connection.Open();
+                            adapter.DeleteCommand.ExecuteNonQuery();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Отдел/подотдел не удалён из Departaments.");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DeleteWorkersOnSelectedDepartament(TreeNode selectedNode)
+        {
+            if (selectedNode.Nodes != null)
+            {
+                foreach (TreeNode treeNode in selectedNode.Nodes)
+                {
+                    deleteCount++;
+                    DeleteWorkersOnSelectedDepartament(treeNode);
+                    SetStructureIDSQL(Convert.ToInt32(treeNode.Name));
+                    DeleteAllWorkersSQL();
+                    return;
+                }
+                
+            }
+            if (Convert.ToInt32(selectedNode.Tag) != 0)
+            {
+                SetStructureIDSQL(Convert.ToInt32(selectedNode.Name));
+                DeleteAllWorkersSQL();
+            }
+
+        }
+
+        private void DeleteAllWorkersSQL()
+        {
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                {
+                    const string sql = "DELETE FROM [Offices].[Workers] WHERE [StructureID] = @StructureID";
+
+                    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                    {
+                        sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Value = StructureID;
+
+                        adapter.DeleteCommand = sqlCommand;
+                        try
+                        {
+                            connection.Open();
+                            adapter.DeleteCommand.ExecuteNonQuery();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Работники не удалёны.");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+
+                }
+            }
         }
     }
 }
