@@ -35,10 +35,20 @@ namespace Divisions
             Lvl = 0;
             
             FillDivisionsNodes();
+
+            if (tvDivisions.Nodes.Count == 0)
+            {
+                btnChangeDivision.Enabled = false;
+                btnDeleteDivision.Enabled = false;
+            }
+
+            btnChangeDivision.Enabled = true;
+            btnDeleteDivision.Enabled = true;
         }
 
         private void tvDivisions_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            
             lb.Text = "Работники:";
             DepartamentID = Convert.ToInt32(e.Node.Name);
             Lvl = Convert.ToInt32(e.Node.Tag);
@@ -47,11 +57,11 @@ namespace Divisions
 
             if (Convert.ToInt32(e.Node.Tag) == 0)
             {
-                dsWorkers.Clear();
                 dgvWorkers.DataSource = null;
                 btnCreateWorker.Enabled = false;
                 btnChangeWorker.Enabled = false;
                 btnDeleteWorker.Enabled = false;
+                GetAllWorkersSQL();
                 return;
             }
 
@@ -59,7 +69,12 @@ namespace Divisions
             btnCreateWorker.Enabled = true;
             btnChangeWorker.Enabled = true;
             btnDeleteWorker.Enabled = true;
-            GetWorkers();
+            GetWorkersSQL();
+        }
+
+        private void GetAllWorkersSQL()
+        {
+            throw new NotImplementedException();
         }
 
         private void SetStructureIDSQL(int departamentID)
@@ -98,7 +113,7 @@ namespace Divisions
             FillTreeDepartaments(e.Node, Convert.ToInt32(e.Node.Name), Convert.ToInt32(e.Node.Tag) + 1);
         }
 
-        private void GetWorkers()
+        private void GetWorkersSQL()
         {
             dsWorkers.Clear();
             dgvWorkers.DataSource = null;
@@ -150,32 +165,20 @@ namespace Divisions
             FillDSRootsDSQL(dsRoots);
             IsTVDepartamensNull = true;
 
-            if (dsRoots.Tables.Count > 0)
+            foreach (DataRow row in dsRoots.Tables[0].Rows)
             {
-                foreach (DataRow row in dsRoots.Tables[0].Rows)
-                {
-                    TreeNode depRoot = new TreeNode(row["Title"].ToString());
-                    
-                    DepartamentID = Convert.ToInt32(row["DepartamentID"]);
-                    
-                    depRoot.Name = DepartamentID.ToString();
-                    depRoot.Tag = 0;
+                TreeNode depRoot = new TreeNode(row["Title"].ToString());
 
-                    IsTVDepartamensNull = false;
-                    FillTreeDepartaments(depRoot, DepartamentID, 1);
-                    
-                    tvDivisions.Nodes.Add(depRoot);
-                }
+                DepartamentID = Convert.ToInt32(row["DepartamentID"]);
+
+                depRoot.Name = DepartamentID.ToString();
+                depRoot.Tag = 0;
+
+                IsTVDepartamensNull = false;
+                FillTreeDepartaments(depRoot, DepartamentID, 1);
+
+                tvDivisions.Nodes.Add(depRoot);
             }
-
-            if(tvDivisions.Nodes.Count == 0)
-            {
-                btnChangeDivision.Enabled = false;
-                btnDeleteDivision.Enabled = false;
-            }
-
-            btnChangeDivision.Enabled = true;
-            btnDeleteDivision.Enabled = true;
         }
 
         private void FillDSRootsDSQL(DataSet dsRoots)
@@ -214,20 +217,17 @@ namespace Divisions
         {
             DataSet dsTreePath = new DataSet();
             FillDSTreePatSQL(dsTreePath, ancestorID, level);
-            
-            if (dsTreePath.Tables[0].Rows.Count.ToString() != "")
+
+            foreach (DataRow row in dsTreePath.Tables[0].Rows)
             {
-                foreach (DataRow row in dsTreePath.Tables[0].Rows)
-                {
-                    TreeNode treePath = new TreeNode();
-                    treePath.Text = row["Title"].ToString();
-                    treePath.Name = row["DepartamentID"].ToString();
-                    treePath.Tag = Convert.ToInt32(row["Level"]);
-                                       
-                    FillTreeDepartaments(treePath, Convert.ToInt32(row["DepartamentID"]), ++level);
-                    
-                    depRoot.Nodes.Add(treePath);
-                }
+                TreeNode treePath = new TreeNode();
+                treePath.Text = row["Title"].ToString();
+                treePath.Name = row["DepartamentID"].ToString();
+                treePath.Tag = Convert.ToInt32(row["Level"]);
+
+                FillTreeDepartaments(treePath, Convert.ToInt32(row["DepartamentID"]), ++level);
+
+                depRoot.Nodes.Add(treePath);
             }
         }
 
@@ -292,7 +292,7 @@ namespace Divisions
         {
             Form frm = new FNewOrChangeWorker();
             frm.ShowDialog();
-            GetWorkers();
+            GetWorkersSQL();
         }
 
         private void btnChangeWorker_Click(object sender, EventArgs e)
@@ -302,7 +302,7 @@ namespace Divisions
                 object[] selectedRow = dsWorkers.Tables[0].Rows[indexSelectedRow].ItemArray;
                 Form frm = new FNewOrChangeWorker(selectedRow);
                 frm.ShowDialog();
-                GetWorkers();
+                GetWorkersSQL();
             }
         }
 
@@ -318,7 +318,7 @@ namespace Divisions
                     DeleteWorkerSQL();
                 }
 
-                GetWorkers();
+                GetWorkersSQL();
             }
         }
        
@@ -408,7 +408,6 @@ namespace Divisions
                 return;
             }
             DeleteSubtreeSQLAndFromDepartaments();
-           
         }
 
         private void DeleteSubtreeSQLAndFromDepartaments()
@@ -439,19 +438,16 @@ namespace Divisions
                     }
                 }
             }
-            DeleteSubTreeFromDepartaments(tvDivisions.SelectedNode);
+            DeleteSubTreeFromTVDepartaments(tvDivisions.SelectedNode);
         }
 
-        private void DeleteSubTreeFromDepartaments(TreeNode selectedNode)
-        {   if (selectedNode.Nodes != null)
-
-                foreach (TreeNode treeNode in selectedNode.Nodes)
-                {
-                    DeleteSubTreeFromDepartaments(treeNode);
-                    DepartamentID = Convert.ToInt32(treeNode.Name);
-                    DeleteSelectedDepartamentFromDepartamentsSQL();
-                    return;
-                }
+        private void DeleteSubTreeFromTVDepartaments(TreeNode selectedNode)
+        {
+            foreach (TreeNode treeNode in selectedNode.Nodes)
+            {
+                DeleteSubTreeFromTVDepartaments(treeNode);
+            }
+            
             DepartamentID = Convert.ToInt32(selectedNode.Name);
             DeleteSelectedDepartamentFromDepartamentsSQL();
         }
@@ -521,18 +517,12 @@ namespace Divisions
 
         private void DeleteWorkersOnSelectedDepartament(TreeNode selectedNode)
         {
-            if (selectedNode.Nodes != null)
+            foreach (TreeNode treeNode in selectedNode.Nodes)
             {
-                foreach (TreeNode treeNode in selectedNode.Nodes)
-                {
-                    deleteCount++;
-                    DeleteWorkersOnSelectedDepartament(treeNode);
-                    SetStructureIDSQL(Convert.ToInt32(treeNode.Name));
-                    DeleteAllWorkersSQL();
-                    return;
-                }
-                
+                deleteCount++;
+                DeleteWorkersOnSelectedDepartament(treeNode);
             }
+            
             if (Convert.ToInt32(selectedNode.Tag) != 0)
             {
                 SetStructureIDSQL(Convert.ToInt32(selectedNode.Name));
