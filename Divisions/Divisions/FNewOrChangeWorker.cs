@@ -15,11 +15,11 @@ namespace Divisions
     public partial class FNewOrChangeWorker : Form
     {
         private int workerID;
-        private int structureID;
-
+        
         public FNewOrChangeWorker()
         {
             InitializeComponent();
+
             btnComplite.Click += btnAddWorker_Click;
             dtpBirthday.ValueChanged += new System.EventHandler(dtpBirthday_ValueChanged);
             dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
@@ -135,11 +135,7 @@ namespace Divisions
 
         private int GetStructureID()
         {
-            if(FDivisionsNavigation.StructureID == 0)
-            {
-                return FDivisionsNavigation.DepartamentIDStructureID[FDivisionsNavigation.DepartamentID]; 
-            }
-            return FDivisionsNavigation.StructureID;
+            return 0;
         }
 
         private decimal GetSalary()

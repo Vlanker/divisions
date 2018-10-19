@@ -83,7 +83,6 @@ namespace Divisions
             }
             
         }
-
         private bool IsTitleValid()
         {
             if(tbTitle.Text == "")
@@ -109,9 +108,9 @@ namespace Divisions
                             sqlCommand.Parameters.Add(new SqlParameter("@Title", SqlDbType.NVarChar, 50));
                             sqlCommand.Parameters["@Title"].Value = tbTitle.Text;
                             sqlCommand.Parameters.Add(new SqlParameter("@DesedantID", SqlDbType.Int));
-                            sqlCommand.Parameters["@DesedantID"].Value = FDivisionsNavigation.DepartamentID;
+                            sqlCommand.Parameters["@DesedantID"].Value = departamentID;
                             sqlCommand.Parameters.Add(new SqlParameter("@Level", SqlDbType.Int));
-                            sqlCommand.Parameters["@Level"].Value = FDivisionsNavigation.Lvl + 1;
+                            sqlCommand.Parameters["@Level"].Value = lvl + 1;
 
                             adapter.InsertCommand = sqlCommand;
 

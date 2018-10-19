@@ -21,7 +21,7 @@ namespace Divisions
         public static int Lvl { get; set; }
         public static int StructureID { get; set; }
         public static bool IsTVDepartamensNull { get; set; }
-        public static Dictionary<int, int> DepartamentIDStructureID = new Dictionary<int, int>();
+       
 
 
         private static int indexSelectedRow; 
@@ -46,7 +46,7 @@ namespace Divisions
             DepartamentID = Convert.ToInt32(e.Node.Name);
             Lvl = Convert.ToInt32(e.Node.Tag);
             Title = e.Node.Text;
-            
+            GetStructureID();
             if (Convert.ToInt32(e.Node.Tag) == 0)
             {
                 dsWorkers.Clear();
@@ -56,6 +56,7 @@ namespace Divisions
                 btnDeleteWorker.Enabled = false;
                 return;
             }
+
             lb.Text = "Работники: " + e.Node.Text;
             btnCreateWorker.Enabled = true;
             btnChangeWorker.Enabled = true;
@@ -63,7 +64,38 @@ namespace Divisions
             GetWorkers();
         }
 
-        
+        private void GetStructureID()
+        {
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+
+                using (SqlCommand sqlCommand = new SqlCommand("Offices.uspGetStructureID", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = DepartamentID;
+                    sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Direction = ParameterDirection.Output;
+
+                    try
+                    {
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        
+                        StructureID = (int)sqlCommand.Parameters["@StructureID"].Value;
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Номер из таблицы Structure не получен.");
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+                
+            }
+
+        }
+
         private void tvDivisions_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             e.Node.Nodes.Clear();
@@ -91,7 +123,6 @@ namespace Divisions
                             connection.Open();
                             adapter.SelectCommand.ExecuteNonQuery();
                             adapter.Fill(dsWorkers);
-                            StructureID = Convert.ToInt32(dsWorkers.Tables[0].Rows[0]["StructureID"]);
 
                             dgvWorkers.DataSource = dsWorkers.Tables[0];
                             dgvWorkers.Columns["WorkerID"].Visible = false;
@@ -127,12 +158,15 @@ namespace Divisions
                 foreach (DataRow row in dsRoots.Tables[0].Rows)
                 {
                     TreeNode depRoot = new TreeNode(row["Title"].ToString());
-                    int ancestorID = Convert.ToInt32(row["DepartamentID"]);
-                    DepartamentID = ancestorID;
-                    depRoot.Name = ancestorID.ToString();
+                    
+                    DepartamentID = Convert.ToInt32(row["DepartamentID"]);
+                    
+                    depRoot.Name = DepartamentID.ToString();
                     depRoot.Tag = 0;
+
                     IsTVDepartamensNull = false;
-                    FillTreeDepartaments(depRoot, ancestorID, 1);
+                    FillTreeDepartaments(depRoot, DepartamentID, 1);
+                    
                     tvDivisions.Nodes.Add(depRoot);
                 }
             }
@@ -192,12 +226,9 @@ namespace Divisions
                     treePath.Text = row["Title"].ToString();
                     treePath.Name = row["DepartamentID"].ToString();
                     treePath.Tag = Convert.ToInt32(row["Level"]);
-                    try
-                    {
-                        DepartamentIDStructureID.Add(Convert.ToInt32(row["DepartamentID"]), Convert.ToInt32(row["StructureID"]));
-                    }
-                    catch { }
+                                       
                     FillTreeDepartaments(treePath, Convert.ToInt32(row["DepartamentID"]), ++level);
+                    
                     depRoot.Nodes.Add(treePath);
                 }
             }
@@ -283,15 +314,18 @@ namespace Divisions
 
         private void btnDeleteWorker_Click(object sender, EventArgs e)
         {
-            DialogResult dialogResult;
-            dialogResult = MessageBox.Show("Вы уверены, что хотите удалить выбраного Работника?",  "Confirm Deletion", MessageBoxButtons.YesNo);
-
-            if (dialogResult == DialogResult.Yes)
+            if (dgvWorkers.SelectedRows != null)
             {
-                DeleteWorker();
-            }
+                DialogResult dialogResult;
+                dialogResult = MessageBox.Show("Вы уверены, что хотите удалить выбраного Работника?", "Confirm Deletion", MessageBoxButtons.YesNo);
 
-            GetWorkers();
+                if (dialogResult == DialogResult.Yes)
+                {
+                    DeleteWorker();
+                }
+
+                GetWorkers();
+            }
         }
 
         private void DeleteWorker()
@@ -360,7 +394,7 @@ namespace Divisions
             if (tvDivisions.SelectedNode != null)
             {
                 DialogResult dialogResult;
-                dialogResult = MessageBox.Show("Вы уверены, что хотите удалить ?", "Confirm Deletion", MessageBoxButtons.YesNo);
+                dialogResult = MessageBox.Show("Вы уверены, что хотите удалить?", "Confirm Deletion", MessageBoxButtons.YesNo);
 
                 if (dialogResult == DialogResult.Yes)
                 {
@@ -373,15 +407,21 @@ namespace Divisions
 
         private void DeleteDepartament()
         {
+            MessageBox.Show(tvDivisions.SelectedNode.Nodes.ToString());
+            
+        }
+
+        private void DeleteWorkers()
+        {
             using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
             {
                 using (SqlDataAdapter adapter = new SqlDataAdapter())
                 {
-                    const string sql = "DELETE FROM [Offices].[Workers] WHERE [WorkerID] = @WorkerID";
+                    const string sql = "DELETE FROM [Offices].[Workers] WHERE [StructureID] = @StructureID";
 
                     using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                     {
-                        sqlCommand.Parameters.Add(new SqlParameter("@WorkerID", SqlDbType.Int)).Value = Convert.ToInt32(dsWorkers.Tables[0].Rows[indexSelectedRow]["WorkerID"]);
+                        sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Value = StructureID;
 
                         adapter.DeleteCommand = sqlCommand;
                         try
