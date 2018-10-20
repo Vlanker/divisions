@@ -71,7 +71,7 @@
             this.scCommon.Panel2.Controls.Add(this.btnChangeWorker);
             this.scCommon.Panel2.Controls.Add(this.btnCreateWorker);
             this.scCommon.Panel2.Controls.Add(this.dgvWorkers);
-            this.scCommon.Size = new System.Drawing.Size(800, 450);
+            this.scCommon.Size = new System.Drawing.Size(1109, 450);
             this.scCommon.SplitterDistance = 247;
             this.scCommon.TabIndex = 0;
             // 
@@ -152,7 +152,7 @@
             // 
             this.btnDeleteWorker.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDeleteWorker.Enabled = false;
-            this.btnDeleteWorker.Location = new System.Drawing.Point(471, 415);
+            this.btnDeleteWorker.Location = new System.Drawing.Point(780, 415);
             this.btnDeleteWorker.Name = "btnDeleteWorker";
             this.btnDeleteWorker.Size = new System.Drawing.Size(75, 23);
             this.btnDeleteWorker.TabIndex = 3;
@@ -164,7 +164,7 @@
             // 
             this.btnChangeWorker.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnChangeWorker.Enabled = false;
-            this.btnChangeWorker.Location = new System.Drawing.Point(390, 415);
+            this.btnChangeWorker.Location = new System.Drawing.Point(699, 415);
             this.btnChangeWorker.Name = "btnChangeWorker";
             this.btnChangeWorker.Size = new System.Drawing.Size(75, 23);
             this.btnChangeWorker.TabIndex = 2;
@@ -176,7 +176,7 @@
             // 
             this.btnCreateWorker.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCreateWorker.Enabled = false;
-            this.btnCreateWorker.Location = new System.Drawing.Point(309, 415);
+            this.btnCreateWorker.Location = new System.Drawing.Point(618, 415);
             this.btnCreateWorker.Name = "btnCreateWorker";
             this.btnCreateWorker.Size = new System.Drawing.Size(75, 23);
             this.btnCreateWorker.TabIndex = 1;
@@ -196,14 +196,14 @@
             this.dgvWorkers.MultiSelect = false;
             this.dgvWorkers.Name = "dgvWorkers";
             this.dgvWorkers.ReadOnly = true;
-            this.dgvWorkers.Size = new System.Drawing.Size(543, 384);
+            this.dgvWorkers.Size = new System.Drawing.Size(852, 384);
             this.dgvWorkers.TabIndex = 0;
             // 
             // FDivisionsNavigation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1109, 450);
             this.Controls.Add(this.scCommon);
             this.Name = "FDivisionsNavigation";
             this.Text = "Подразделения";

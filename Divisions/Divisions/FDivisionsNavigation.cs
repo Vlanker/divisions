@@ -61,7 +61,7 @@ namespace Divisions
                 btnCreateWorker.Enabled = false;
                 btnChangeWorker.Enabled = false;
                 btnDeleteWorker.Enabled = false;
-                GetAllWorkersSQL();
+                GetAllWorkerOfDepartamentsSQL();
                 return;
             }
 
@@ -72,9 +72,59 @@ namespace Divisions
             GetWorkersSQL();
         }
 
-        private void GetAllWorkersSQL()
+        private void GetAllWorkerOfDepartamentsSQL()
         {
-            throw new NotImplementedException();
+            dsWorkers.Reset();
+
+            dgvWorkers.DataSource = null;
+
+            using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand("Offices.uspGetAllWorkeraOfDepartament", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.Add(new SqlParameter("@AncestorID", SqlDbType.Int));
+                        sqlCommand.Parameters["@AncestorID"].Value = DepartamentID;
+                        adapter.SelectCommand = sqlCommand;
+
+                        try
+                        {
+                            connection.Open();
+                            adapter.SelectCommand.ExecuteNonQuery();
+                            adapter.Fill(dsWorkers);
+
+                            dgvWorkers.DataSource = dsWorkers.Tables[0];
+                            
+                            dgvWorkers.Columns["Title"].HeaderText = "Название отдела";
+                            FormatDVGWorkers();
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Запрошенные Работники Департамета не могут загрузиться на форму.");
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void FormatDVGWorkers()
+        {
+            dgvWorkers.Columns["WorkerID"].Visible = false;
+            dgvWorkers.Columns["StructureID"].Visible = false;
+            dgvWorkers.Columns["PersNum"].HeaderText = "Табельный номер";
+            dgvWorkers.Columns["FullName"].HeaderText = "ФИО";
+            dgvWorkers.Columns["Birthday"].HeaderText = "Дата рождения";
+            dgvWorkers.Columns["HiringDay"].HeaderText = "Дата приёма";
+            dgvWorkers.Columns["Salary"].HeaderText = "Зарплата";
+            dgvWorkers.Columns["ProfArea"].HeaderText = "Профобласть";
+            dgvWorkers.Columns["Gender"].HeaderText = "Пол";
+            
         }
 
         private void SetStructureIDSQL(int departamentID)
@@ -115,7 +165,7 @@ namespace Divisions
 
         private void GetWorkersSQL()
         {
-            dsWorkers.Clear();
+            dsWorkers.Reset();
             dgvWorkers.DataSource = null;
             
             using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
@@ -136,8 +186,8 @@ namespace Divisions
                             adapter.Fill(dsWorkers);
 
                             dgvWorkers.DataSource = dsWorkers.Tables[0];
-                            dgvWorkers.Columns["WorkerID"].Visible = false;
-                            dgvWorkers.Columns["StructureID"].Visible = false;
+                            
+                            FormatDVGWorkers();
                         }
                         catch
                         {
@@ -164,20 +214,22 @@ namespace Divisions
             tvDivisions.Nodes.Clear();
             FillDSRootsDSQL(dsRoots);
             IsTVDepartamensNull = true;
-
-            foreach (DataRow row in dsRoots.Tables[0].Rows)
+            if (dsRoots.Tables[0].Rows.Count != 0)
             {
-                TreeNode depRoot = new TreeNode(row["Title"].ToString());
+                foreach (DataRow row in dsRoots.Tables[0].Rows)
+                {
+                    TreeNode depRoot = new TreeNode(row["Title"].ToString());
 
-                DepartamentID = Convert.ToInt32(row["DepartamentID"]);
+                    DepartamentID = Convert.ToInt32(row["DepartamentID"]);
 
-                depRoot.Name = DepartamentID.ToString();
-                depRoot.Tag = 0;
+                    depRoot.Name = DepartamentID.ToString();
+                    depRoot.Tag = 0;
 
-                IsTVDepartamensNull = false;
-                FillTreeDepartaments(depRoot, DepartamentID, 1);
+                    IsTVDepartamensNull = false;
+                    FillTreeDepartaments(depRoot, DepartamentID, 1);
 
-                tvDivisions.Nodes.Add(depRoot);
+                    tvDivisions.Nodes.Add(depRoot);
+                }
             }
         }
 
@@ -393,7 +445,11 @@ namespace Divisions
                 }
 
                 FillDivisionsNodes();
+                
+                dgvWorkers.DataSource = null;
+                
             }
+            
         }
 
         private void DeleteDepartament()
