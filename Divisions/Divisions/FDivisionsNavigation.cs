@@ -82,11 +82,10 @@ namespace Divisions
             {
                 using (SqlDataAdapter adapter = new SqlDataAdapter())
                 {
-                    using (SqlCommand sqlCommand = new SqlCommand("Offices.uspGetAllWorkeraOfDepartament", connection))
+                    using (SqlCommand sqlCommand = new SqlCommand("Offices.uspGetAllWorkersOfDepartament", connection))
                     {
                         sqlCommand.CommandType = CommandType.StoredProcedure;
-                        sqlCommand.Parameters.Add(new SqlParameter("@AncestorID", SqlDbType.Int));
-                        sqlCommand.Parameters["@AncestorID"].Value = DepartamentID;
+                        sqlCommand.Parameters.Add(new SqlParameter("@AncestorID", SqlDbType.Int)).Value = DepartamentID;
                         adapter.SelectCommand = sqlCommand;
 
                         try

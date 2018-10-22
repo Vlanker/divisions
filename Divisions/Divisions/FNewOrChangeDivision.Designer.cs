@@ -84,7 +84,7 @@
             this.tbTitle.Location = new System.Drawing.Point(12, 25);
             this.tbTitle.Name = "tbTitle";
             this.tbTitle.Size = new System.Drawing.Size(486, 20);
-            this.tbTitle.TabIndex = 6;
+            this.tbTitle.TabIndex = 1;
             // 
             // lblTitle
             // 
