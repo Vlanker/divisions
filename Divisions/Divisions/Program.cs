@@ -16,7 +16,7 @@ namespace Divisions
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FDivisionsNavigation());
+            Application.Run(new FmMain());
         }
     }
 }

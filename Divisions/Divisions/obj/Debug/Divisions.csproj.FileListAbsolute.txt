@@ -1,5 +1,4 @@
 K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.csprojAssemblyReference.cache
-K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.FDivisionsNavigation.resources
 K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.FNewOrChangeDivision.resources
 K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.FNewOrChangeWorker.resources
 K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.Properties.Resources.resources
@@ -22,3 +21,7 @@ D:\Repository\source\repos\divisions\Divisions\Divisions\obj\Debug\Divisions.csp
 D:\Repository\source\repos\divisions\Divisions\Divisions\obj\Debug\Divisions.csproj.CoreCompileInputs.cache
 D:\Repository\source\repos\divisions\Divisions\Divisions\obj\Debug\Divisions.exe
 D:\Repository\source\repos\divisions\Divisions\Divisions\obj\Debug\Divisions.pdb
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.FmMain.resources
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\bin\Debug\LocalDbQueriesLibrary.dll
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\bin\Debug\LocalDbQueriesLibrary.pdb
+K:\Repository\sourses\repos\_Division\Divisions\Divisions\obj\Debug\Divisions.csproj.CopyComplete

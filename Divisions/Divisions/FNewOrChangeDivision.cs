@@ -30,7 +30,7 @@ namespace Divisions
         {
             this.departamentID = departamentID;
             this.lvl = lvl;
-            lblTitle.Text = "Добавить отдел/ подотдел в " + FDivisionsNavigation.Title;
+            //lblTitle.Text = "Добавить отдел/ подотдел в " + FmMain.Title;
             btnAddBranch.Enabled = true;
         }
 

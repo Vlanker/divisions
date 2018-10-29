@@ -48,6 +48,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LocalDbQueriesLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LocalDbQueriesLibrary\LocalDbQueriesLibrary\LocalDbQueriesLibrary\bin\Debug\LocalDbQueriesLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -61,11 +65,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FDivisionsNavigation.cs">
+    <Compile Include="DAL\Division.cs" />
+    <Compile Include="DAL\DivisionRepository.cs" />
+    <Compile Include="FmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FDivisionsNavigation.Designer.cs">
-      <DependentUpon>FDivisionsNavigation.cs</DependentUpon>
+    <Compile Include="FmMain.Designer.cs">
+      <DependentUpon>FmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="FNewOrChangeDivision.cs">
       <SubType>Form</SubType>
@@ -81,8 +87,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FDivisionsNavigation.resx">
-      <DependentUpon>FDivisionsNavigation.cs</DependentUpon>
+    <EmbeddedResource Include="FmMain.resx">
+      <DependentUpon>FmMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FNewOrChangeDivision.resx">
       <DependentUpon>FNewOrChangeDivision.cs</DependentUpon>

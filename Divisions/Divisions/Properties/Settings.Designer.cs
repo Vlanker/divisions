@@ -26,8 +26,8 @@ namespace Divisions.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDb)\\MSSQLLocalDb;Initial Catalog=Offices;Integrated Security=Tr" +
-            "ue;Pooling=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDb)\\MSSQLLocalDb;Initial Catalog=Divisions;Integrated Security=" +
+            "True;Pooling=True")]
         public string connString {
             get {
                 return ((string)(this["connString"]));
