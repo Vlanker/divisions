@@ -12,13 +12,11 @@ namespace LocalDbQueriesLibrary
     {
         private static DivisionSQL instance;
         internal string Connection { get; set; }
+        
+        
         private DivisionSQL()
-        { 
-        }
-        private DivisionSQL(string connection)
-        {
-            this.Connection = connection;
-        }
+        { }
+
         public static DivisionSQL GetInstance()
         {
             if (instance == null)
@@ -26,6 +24,11 @@ namespace LocalDbQueriesLibrary
                 instance = new DivisionSQL();
             }
             return instance;
+        }
+
+        public void Connect(string connection)
+        {
+            this.Connection = connection;
         }
 
         public DataSet GetDepartaments()
@@ -36,7 +39,7 @@ namespace LocalDbQueriesLibrary
                 {
                     using (SqlDataAdapter adapter = new SqlDataAdapter())
                     {
-                        using (SqlCommand sqlCommand = new SqlCommand("Divisions.uspGetAllDepartaments", connection))
+                        using (SqlCommand sqlCommand = new SqlCommand("Divisions.uspGetDepartaments", connection))
                         {
                             sqlCommand.CommandType = CommandType.StoredProcedure;
 

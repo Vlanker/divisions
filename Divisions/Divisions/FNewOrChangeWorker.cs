@@ -103,7 +103,7 @@ namespace Divisions
                     {
                         sqlCommand.CommandType = CommandType.Text;
 
-                        wsqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Value = FmMain.StructureID;
+                        //wsqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Value = FmMain.StructureID;
                         sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = tbPersNum.Text;
                         sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = tbFullName.Text;
                         sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = dtpBirthday.Value.ToShortDateString();
