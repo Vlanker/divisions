@@ -4,3 +4,9 @@ K:\Repository\sourses\repos\_Division\LocalDbQueriesLibrary\LocalDbQueriesLibrar
 K:\Repository\sourses\repos\_Division\LocalDbQueriesLibrary\LocalDbQueriesLibrary\LocalDbQueriesLibrary\obj\Debug\LocalDbQueriesLibrary.csproj.CoreCompileInputs.cache
 K:\Repository\sourses\repos\_Division\LocalDbQueriesLibrary\LocalDbQueriesLibrary\LocalDbQueriesLibrary\obj\Debug\LocalDbQueriesLibrary.dll
 K:\Repository\sourses\repos\_Division\LocalDbQueriesLibrary\LocalDbQueriesLibrary\LocalDbQueriesLibrary\obj\Debug\LocalDbQueriesLibrary.pdb
+D:\Repository\source\repos\divisions\LocalDbQueriesLibrary\LocalDbQueriesLibrary\LocalDbQueriesLibrary\bin\Debug\LocalDbQueriesLibrary.dll
+D:\Repository\source\repos\divisions\LocalDbQueriesLibrary\LocalDbQueriesLibrary\LocalDbQueriesLibrary\bin\Debug\LocalDbQueriesLibrary.pdb
+D:\Repository\source\repos\divisions\LocalDbQueriesLibrary\LocalDbQueriesLibrary\LocalDbQueriesLibrary\obj\Debug\LocalDbQueriesLibrary.csprojAssemblyReference.cache
+D:\Repository\source\repos\divisions\LocalDbQueriesLibrary\LocalDbQueriesLibrary\LocalDbQueriesLibrary\obj\Debug\LocalDbQueriesLibrary.csproj.CoreCompileInputs.cache
+D:\Repository\source\repos\divisions\LocalDbQueriesLibrary\LocalDbQueriesLibrary\LocalDbQueriesLibrary\obj\Debug\LocalDbQueriesLibrary.dll
+D:\Repository\source\repos\divisions\LocalDbQueriesLibrary\LocalDbQueriesLibrary\LocalDbQueriesLibrary\obj\Debug\LocalDbQueriesLibrary.pdb
