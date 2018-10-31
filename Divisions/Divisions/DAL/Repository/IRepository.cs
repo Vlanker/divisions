@@ -9,10 +9,10 @@ namespace Divisions.DAL.Repository
     interface IRepository<T>
         where T : class
     {
-        List<T> GetList(); 
+        IEnumerable<T> List(); 
         T GetById(int id);
-        void Create(T item);
-        void Update(T item);
-        void Delete(int id);
+        T Create(T itemToCreate);
+        T Edit(T itemToEdit);
+        void Delete(T itemToDelete);
     }
 }

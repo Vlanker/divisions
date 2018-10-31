@@ -10,34 +10,33 @@ namespace Divisions.DAL.Repository
 {
     class DivisionRepository : IRepository<Division>
     {
-        private DivisionSQL db = DivisionSQL.GetInstance();
+        private List<Division> context = null;
 
-        private List<Division> context;
+        
 
-        public List<Division> GetList()
+        public Division Create(Division itemToCreate)
         {
-            if (context == null)
-            {
-                db.Connect(Properties.Settings.Default.connString);
-                DataSet data = db.GetDepartaments();
-
-                if (data.Tables[0].Rows.Count != 0)
-                {
-                    context = new List<Division>();
-                    foreach (DataRow row in data.Tables[0].Rows)
-                    {
-                        context.Add(new Division { Id = Convert.ToInt32(row["ID"]), Name = Convert.ToString(row["Name"]), ParentId = Convert.ToInt32(row["ParentID"]) });
-                    }
-
-                }
-            }
-            return context;
+            return 
         }
-        public List<Division> GetById(int id)
+
+        public void Delete(Division itemToDelete)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Division Edit(Division itemToEdit)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Division GetById(int id)
         {
             return context.Find(d => d.Id == id);
         }
 
-
+        public IEnumerable<Division> List()
+        {
+            return context;
+        }
     }
 }
