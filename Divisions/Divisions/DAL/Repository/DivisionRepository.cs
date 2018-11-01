@@ -13,8 +13,6 @@ namespace Divisions.DAL.Repository
     {
         private DbContext context = new DbContext();
 
-        
-
         public Division Create(Division divisionToCreate)
         {
             
@@ -33,12 +31,12 @@ namespace Divisions.DAL.Repository
 
         public Division GetById(int id)
         {
-            return context.Find(d => d.Id == id);
+            return context.Find(id);
         }
 
-        public IEnumerable<Division> List()
+        public List<Division> DivisionList()
         {
-            return context;
+            return context.DivisionList();
         }
     }
 }

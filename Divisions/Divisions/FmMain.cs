@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using Divisions.DAL.Repository;
+using Divisions.DAL;
 
 namespace Divisions
 {
@@ -20,7 +21,7 @@ namespace Divisions
         {
             InitializeComponent();
 
-            InitializeTVDivisions(repos.GetList(), null);
+            InitializeTVDivisions(repos.DivisionList(), null);
             tvDivisions.AfterSelect += tvDivisions_AfterSelect;
 
             if (tvDivisions.Nodes.Count == 0)
@@ -143,7 +144,7 @@ namespace Divisions
             switch (keyData)
             {
                 case Keys.F5:
-                    InitializeTVDivisions(repos.GetDivisionsList(), null);
+                    InitializeTVDivisions(repos.DivisionList(), null);
                     bHandled = true;
                     break;
             }

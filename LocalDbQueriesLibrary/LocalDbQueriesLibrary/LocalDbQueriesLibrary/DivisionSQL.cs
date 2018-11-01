@@ -1,21 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
 
 namespace LocalDbQueriesLibrary
 {
-    public static class DivisionSQL
+    public class DivisionSQL
     {
-        internal static string Connection { get; set; }
-        public static void Connect(string connection)
+        internal static string Connection { get; private set; }
+        private static DivisionSQL divisionToSQL;
+
+        private DivisionSQL()
         {
-            Connection = connection;
+            Console.WriteLine($"Connection to {Connection}");
         }
-        public static DataSet GetDepartaments()
+
+        public static DivisionSQL Connect(string connection)
+        {
+            divisionToSQL = new DivisionSQL();
+            Connection = connection;
+            return divisionToSQL;
+        }
+        public static DataSet GetDivisions()
         {
             using (DataSet resultData = new DataSet())
             {

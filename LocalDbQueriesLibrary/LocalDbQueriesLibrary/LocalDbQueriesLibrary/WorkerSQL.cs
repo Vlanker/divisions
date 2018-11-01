@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LocalDbQueriesLibrary
 {
@@ -54,13 +50,13 @@ namespace LocalDbQueriesLibrary
             using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
 
-                const string sql = "INSERT INTO [Divisions].[Workers] (DivisionID, PersNum, FullName, Birthday, HiringDay, Salary, ProfArea, Gender) VALUES (@DivisionID, @PersNum, @FullName, @Birthday, @HiringDay, @Salary, @ProfArea, @Gender)";
+                const string sql = "INSERT INTO [Divisions].[Workers] (DepartamentID, PersNum, FullName, Birthday, HiringDay, Salary, ProfArea, Gender) VALUES (@DepartamentID, @PersNum, @FullName, @Birthday, @HiringDay, @Salary, @ProfArea, @Gender)";
 
                 using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                 {
                     sqlCommand.CommandType = CommandType.Text;
 
-                    sqlCommand.Parameters.Add(new SqlParameter("@DivisionID", SqlDbType.Int)).Value = divisiontId;
+                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = divisiontId;
                     sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = persNum;
                     sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = fullName;
                     sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = birthday;
@@ -95,12 +91,12 @@ namespace LocalDbQueriesLibrary
 
             using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
-                const string sql = "UPDATE [Divisions].[Workers] SET [DivisionID] = @DivisionID, [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [WorkerID] = @WorkerID";
+                const string sql = "UPDATE [Divisions].[Workers] SET [DepartamentID] = @DepartamentID, [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [WorkerID] = @WorkerID";
 
                 using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                 {
                     sqlCommand.CommandType = CommandType.Text;
-                    sqlCommand.Parameters.Add(new SqlParameter("@DivisionID", SqlDbType.Int)).Value = divisionID;
+                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = divisionID;
                     sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = persNum;
                     sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = fullName;
                     sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = birthday;
@@ -167,7 +163,7 @@ namespace LocalDbQueriesLibrary
 
             return result;
         }
-        public static bool DeleteByDepartamentId(int divisionID)
+        public static bool DeleteByDivisiontId(int divisionID)
         {
             bool result = false;
 
@@ -175,11 +171,11 @@ namespace LocalDbQueriesLibrary
             {
                 using (SqlDataAdapter adapter = new SqlDataAdapter())
                 {
-                    const string sql = "DELETE FROM [Divisions].[Workers] WHERE [DivisionID] = @DivisionID";
+                    const string sql = "DELETE FROM [Divisions].[Workers] WHERE [DepartamentID] = @DepartamentID";
 
                     using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                     {
-                        sqlCommand.Parameters.Add(new SqlParameter("@DivisionID", SqlDbType.Int)).Value = divisionID;
+                        sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = divisionID;
 
                         adapter.DeleteCommand = sqlCommand;
                         try

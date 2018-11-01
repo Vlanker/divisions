@@ -10,20 +10,27 @@ namespace Divisions.DAL.Context
 {
     class DbContext
     {
-        private readonly string connection = Properties.Settings.Default.connString;
+        private DivisionSQL divisionToSQL = DivisionSQL.Connect(Properties.Settings.Default.connString);
+        List<Division> divisionList;
 
-        public DbContext()
+
+        public List<Division> DivisionList()
         {
-            new DivisionSQL().Connect(connection);
-            
+            using (DataSet ds = DivisionSQL.GetDivisions())
+            {
+                divisionList = ds.Tables[0].AsEnumerable().Select(dataRow => new Division
+                {
+                    Id = dataRow.Field<int>("ID"),
+                    Name = dataRow.Field<string>("Name"),
+                    ParentId = dataRow.Field<int>("ParentID")
+                }).ToList();
+            }
+            return divisionList;
         }
 
-        public DataSet DivisionList()
+        internal Division Find(int id)
         {
-            Math
-            return DivisionSQL;
+            return divisionList.Find(d => d.Id == id);
         }
-
-         
     }
 }

@@ -9,7 +9,7 @@ namespace Divisions.DAL.Repository
     interface IRepository<T>
         where T : class
     {
-        IEnumerable<T> List(); 
+        List<T> DivisionList(); 
         T GetById(int id);
         T Create(T itemToCreate);
         T Edit(T itemToEdit);
