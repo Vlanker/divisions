@@ -8,18 +8,14 @@ using System.Data;
 
 namespace LocalDbQueriesLibrary
 {
-    public class DivisionSQL
+    public static class DivisionSQL
     {
         internal static string Connection { get; set; }
-        
-        public DivisionSQL()
-        {
-        }
-        public void Connect(string connection)
+        public static void Connect(string connection)
         {
             Connection = connection;
         }
-        public DataSet GetDepartaments()
+        public static DataSet GetDepartaments()
         {
             using (DataSet resultData = new DataSet())
             {
@@ -55,7 +51,7 @@ namespace LocalDbQueriesLibrary
                 return resultData;
             }
         }
-        public bool Add(string name, int parentId)
+        public static bool Add(string name, int parentId)
         {
             bool result = false;
 
@@ -93,7 +89,7 @@ namespace LocalDbQueriesLibrary
 
             return result;
         }
-        public bool Update(int id, string name)
+        public static bool Update(int id, string name)
         {
             bool result = false;
 
@@ -127,7 +123,7 @@ namespace LocalDbQueriesLibrary
 
             return result;
         }
-        public bool DeleteById(int id)
+        public static bool DeleteById(int id)
         {
             bool result = false;
 
@@ -162,7 +158,7 @@ namespace LocalDbQueriesLibrary
 
             return result;
         }
-        public bool DeleteByParentId(int parentId)
+        public static bool DeleteByParentId(int parentId)
         {
             bool result = false;
 

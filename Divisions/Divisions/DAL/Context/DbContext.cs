@@ -10,21 +10,18 @@ namespace Divisions.DAL.Context
 {
     class DbContext
     {
-        private DataSet divisionSet { get; set; }
-        private DataSet workerSet { get; set; }
+        private readonly string connection = Properties.Settings.Default.connString;
 
-        private DivisionSQL divisionToSQL = new DivisionSQL();
-        private WorkerSQL workerToSQL = new WorkerSQL();
         public DbContext()
         {
-            divisionToSQL.Connect(Properties.Settings.Default.connString);
-            divisionSet = divisionToSQL.GetDepartaments();
-            workerSet = workerToSQL.GetWorkers();
+            new DivisionSQL().Connect(connection);
+            
         }
 
         public DataSet DivisionList()
         {
-            return divisionSet;
+            Math
+            return DivisionSQL;
         }
 
          

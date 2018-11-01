@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace LocalDbQueriesLibrary
 {
-    public class WorkerSQL
+    public static class WorkerSQL
     {
-        public WorkerSQL() { }
-        public DataSet GetWorkers()
+        public static DataSet GetWorkers(int divisionId)
         {
             using (DataSet data = new DataSet())
             {
@@ -48,20 +47,20 @@ namespace LocalDbQueriesLibrary
                 return data;
             }
         }
-        public bool Add(int departamentId, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
+        public static bool Add(int divisiontId, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
         {
             bool result = false;
 
             using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
 
-                const string sql = "INSERT INTO [Divisions].[Workers] (DepartamentID, PersNum, FullName, Birthday, HiringDay, Salary, ProfArea, Gender) VALUES (@DepartamentID, @PersNum, @FullName, @Birthday, @HiringDay, @Salary, @ProfArea, @Gender)";
+                const string sql = "INSERT INTO [Divisions].[Workers] (DivisionID, PersNum, FullName, Birthday, HiringDay, Salary, ProfArea, Gender) VALUES (@DivisionID, @PersNum, @FullName, @Birthday, @HiringDay, @Salary, @ProfArea, @Gender)";
 
                 using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                 {
                     sqlCommand.CommandType = CommandType.Text;
 
-                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = departamentId;
+                    sqlCommand.Parameters.Add(new SqlParameter("@DivisionID", SqlDbType.Int)).Value = divisiontId;
                     sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = persNum;
                     sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = fullName;
                     sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = birthday;
@@ -90,18 +89,18 @@ namespace LocalDbQueriesLibrary
 
             return result;
         }
-        public bool Update(int id, int departamentId, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
+        public static bool Update(int id, int divisionID, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
         {
             bool result = false;
 
             using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
-                const string sql = "UPDATE [Divisions].[Workers] SET [DepartamentID] = @DepartamentID, [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [WorkerID] = @WorkerID";
+                const string sql = "UPDATE [Divisions].[Workers] SET [DivisionID] = @DivisionID, [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [WorkerID] = @WorkerID";
 
                 using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                 {
                     sqlCommand.CommandType = CommandType.Text;
-                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = departamentId;
+                    sqlCommand.Parameters.Add(new SqlParameter("@DivisionID", SqlDbType.Int)).Value = divisionID;
                     sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = persNum;
                     sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = fullName;
                     sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = birthday;
@@ -132,7 +131,7 @@ namespace LocalDbQueriesLibrary
 
             return result;
         }
-        public bool DeleteById(int id)
+        public static bool DeleteById(int id)
         {
             bool result = false;
 
@@ -168,7 +167,7 @@ namespace LocalDbQueriesLibrary
 
             return result;
         }
-        public bool DeleteByDepartamentId(int departamentId)
+        public static bool DeleteByDepartamentId(int divisionID)
         {
             bool result = false;
 
@@ -176,11 +175,11 @@ namespace LocalDbQueriesLibrary
             {
                 using (SqlDataAdapter adapter = new SqlDataAdapter())
                 {
-                    const string sql = "DELETE FROM [Divisions].[Workers] WHERE [DepartamentID] = @DepartamentID";
+                    const string sql = "DELETE FROM [Divisions].[Workers] WHERE [DivisionID] = @DivisionID";
 
                     using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                     {
-                        sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = departamentId;
+                        sqlCommand.Parameters.Add(new SqlParameter("@DivisionID", SqlDbType.Int)).Value = divisionID;
 
                         adapter.DeleteCommand = sqlCommand;
                         try
