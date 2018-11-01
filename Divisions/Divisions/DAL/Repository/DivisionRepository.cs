@@ -4,27 +4,29 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Divisions.DAL.Context;
 using LocalDbQueriesLibrary;
 
 namespace Divisions.DAL.Repository
 {
     class DivisionRepository : IRepository<Division>
     {
-        private List<Division> context = null;
+        private DbContext context = new DbContext();
 
         
 
-        public Division Create(Division itemToCreate)
+        public Division Create(Division divisionToCreate)
         {
-            return 
+            
+            return divisionToCreate;
         }
 
-        public void Delete(Division itemToDelete)
+        public void Delete(Division divisionToDelete)
         {
             throw new NotImplementedException();
         }
 
-        public Division Edit(Division itemToEdit)
+        public Division Edit(Division sivisionToEdit)
         {
             throw new NotImplementedException();
         }

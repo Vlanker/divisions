@@ -10,27 +10,15 @@ namespace LocalDbQueriesLibrary
 {
     public class DivisionSQL
     {
-        private static DivisionSQL instance;
-        internal string Connection { get; set; }
+        internal static string Connection { get; set; }
         
-        
-        private DivisionSQL()
-        { }
-
-        public static DivisionSQL GetInstance()
+        public DivisionSQL()
         {
-            if (instance == null)
-            {
-                instance = new DivisionSQL();
-            }
-            return instance;
         }
-
         public void Connect(string connection)
         {
-            this.Connection = connection;
+            Connection = connection;
         }
-
         public DataSet GetDepartaments()
         {
             using (DataSet resultData = new DataSet())

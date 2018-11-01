@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 
 namespace LocalDbQueriesLibrary
 {
-    class WorkerSQL
+    public class WorkerSQL
     {
-        public DataSet GetWorkersd()
+        public WorkerSQL() { }
+        public DataSet GetWorkers()
         {
             using (DataSet data = new DataSet())
             {
-                using (SqlConnection connection = new SqlConnection(DivisionSQL.GetInstance().Connection))
+                using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
                 {
                     using (SqlDataAdapter adapter = new SqlDataAdapter())
                     {
@@ -51,7 +52,7 @@ namespace LocalDbQueriesLibrary
         {
             bool result = false;
 
-            using (SqlConnection connection = new SqlConnection(DivisionSQL.GetInstance().Connection))
+            using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
 
                 const string sql = "INSERT INTO [Divisions].[Workers] (DepartamentID, PersNum, FullName, Birthday, HiringDay, Salary, ProfArea, Gender) VALUES (@DepartamentID, @PersNum, @FullName, @Birthday, @HiringDay, @Salary, @ProfArea, @Gender)";
@@ -93,7 +94,7 @@ namespace LocalDbQueriesLibrary
         {
             bool result = false;
 
-            using (SqlConnection connection = new SqlConnection(DivisionSQL.GetInstance().Connection))
+            using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
                 const string sql = "UPDATE [Divisions].[Workers] SET [DepartamentID] = @DepartamentID, [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [WorkerID] = @WorkerID";
 
@@ -135,7 +136,7 @@ namespace LocalDbQueriesLibrary
         {
             bool result = false;
 
-            using (SqlConnection connection = new SqlConnection(DivisionSQL.GetInstance().Connection))
+            using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
                 using (SqlDataAdapter adapter = new SqlDataAdapter())
                 {
@@ -144,6 +145,42 @@ namespace LocalDbQueriesLibrary
                     using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                     {
                         sqlCommand.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int)).Value = id;
+
+                        adapter.DeleteCommand = sqlCommand;
+                        try
+                        {
+                            connection.Open();
+                            adapter.DeleteCommand.ExecuteNonQuery();
+                            result = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                            result = false;
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+        public bool DeleteByDepartamentId(int departamentId)
+        {
+            bool result = false;
+
+            using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
+            {
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                {
+                    const string sql = "DELETE FROM [Divisions].[Workers] WHERE [DepartamentID] = @DepartamentID";
+
+                    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                    {
+                        sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = departamentId;
 
                         adapter.DeleteCommand = sqlCommand;
                         try
