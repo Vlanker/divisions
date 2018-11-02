@@ -115,7 +115,7 @@
             this.btnCreateDivision.TabIndex = 0;
             this.btnCreateDivision.Text = "Добавить";
             this.btnCreateDivision.UseVisualStyleBackColor = true;
-            this.btnCreateDivision.Click += new System.EventHandler(this.btnCreateDivision_Click);
+            this.btnCreateDivision.Click += new System.EventHandler(this.btnAddDivision_Click);
             // 
             // btnChangeDivision
             // 

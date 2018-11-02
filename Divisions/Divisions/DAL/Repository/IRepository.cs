@@ -11,8 +11,8 @@ namespace Divisions.DAL.Repository
     {
         List<T> DivisionList(); 
         T GetById(int id);
-        T Create(T itemToCreate);
-        T Edit(T itemToEdit);
-        void Delete(T itemToDelete);
+        void Create(T item);
+        void Edit(T item);
+        bool Delete(T item);
     }
 }

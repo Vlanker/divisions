@@ -11,32 +11,59 @@ namespace Divisions.DAL.Repository
 {
     class DivisionRepository : IRepository<Division>
     {
-        private DbContext context = new DbContext();
-
-        public Division Create(Division divisionToCreate)
+        private DbContext context;
+        private static  DivisionRepository repos;
+        private DivisionRepository()
         {
-            
-            return divisionToCreate;
+            context = new DbContext();
         }
 
-        public void Delete(Division divisionToDelete)
+        internal static DivisionRepository GetRepository()
         {
-            throw new NotImplementedException();
+            if (repos == null)
+            {
+                repos = new DivisionRepository();
+            }
+            return repos;
         }
-
-        public Division Edit(Division sivisionToEdit)
+        public void Create(Division division)
         {
-            throw new NotImplementedException();
+            context.Add(division);
         }
-
+        public bool Delete(Division division)
+        {
+            return context.Remove(division);
+        }
+        public void Edit(Division division)
+        {
+             context.Edit(division);
+        }
         public Division GetById(int id)
         {
             return context.Find(id);
         }
-
         public List<Division> DivisionList()
         {
             return context.DivisionList();
+        }
+        public List<Division> GetDivisions()
+        {
+            return context.GetDivisions();
+        }
+
+        internal void Create(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Create(string name, int parentid)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Edit(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

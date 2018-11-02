@@ -56,9 +56,9 @@ namespace LocalDbQueriesLibrary
                 return resultData;
             }
         }
-        public static bool Add(string name, int parentId)
+        public static int Add(string name, int parentId)
         {
-            bool result = false;
+            int result = -1;
 
             using (SqlConnection connection = new SqlConnection(Connection))
             {
@@ -70,24 +70,24 @@ namespace LocalDbQueriesLibrary
 
                         sqlCommand.Parameters.Add(new SqlParameter("@Name", SqlDbType.NVarChar, 40)).Value = name;
                         sqlCommand.Parameters.Add(new SqlParameter("@ParentID", SqlDbType.Int)).Value = parentId;
-
+                        sqlCommand.Parameters.Add(new SqlParameter("@RC", SqlDbType.Int)).Direction = ParameterDirection.ReturnValue;
                         adapter.InsertCommand = sqlCommand;
 
                         try
                         {
                             connection.Open();
                             adapter.InsertCommand.ExecuteNonQuery();
-                            result = true;
+                            
+                            result = (int)adapter.InsertCommand.Parameters["@RC"].Value;
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            result = false;
+                            Console.WriteLine(ex);
                         }
                         finally
                         {
                             connection.Close();
                         }
-
                     }
                 }
             }
