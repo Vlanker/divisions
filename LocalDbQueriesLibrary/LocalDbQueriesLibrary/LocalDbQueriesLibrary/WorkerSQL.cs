@@ -43,9 +43,9 @@ namespace LocalDbQueriesLibrary
                 return data;
             }
         }
-        public static bool Add(int divisiontId, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
+        public static int Add(int divisiontId, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
         {
-            bool result = false;
+            int result = -1;
 
             using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
@@ -64,17 +64,18 @@ namespace LocalDbQueriesLibrary
                     sqlCommand.Parameters.Add(new SqlParameter("@Salary", SqlDbType.Money)).Value = salary;
                     sqlCommand.Parameters.Add(new SqlParameter("@ProfArea", SqlDbType.NVarChar, 150)).Value = profArea;
                     sqlCommand.Parameters.Add(new SqlParameter("@Gender", SqlDbType.NVarChar, 4)).Value = gender;
-
+                    sqlCommand.Parameters.Add(new SqlParameter("@RC", SqlDbType.Int)).Direction = ParameterDirection.ReturnValue;
                     try
                     {
                         connection.Open();
                         sqlCommand.ExecuteNonQuery();
-                        result = true;
+
+                        result = (int)sqlCommand.Parameters["@RC"].Value;
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex);
-                        result = false;
+                        
                     }
                     finally
                     {
