@@ -8,20 +8,25 @@
         <e p="App.config" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="DAL" t="Include">
+          <e p="Context" t="Include">
+            <e p="DbContext.cs" t="Include" />
+          </e>
           <e p="Division.cs" t="Include" />
-          <e p="DivisionRepository.cs" t="Include" />
+          <e p="Repository" t="Include">
+            <e p="DivisionRepository.cs" t="Include" />
+            <e p="IRepository.cs" t="Include" />
+          </e>
         </e>
         <e p="Divisions.csproj" t="IncludeRecursive" />
+        <e p="FmAddOrEditDivision.cs" t="Include" />
+        <e p="FmAddOrEditDivision.Designer.cs" t="Include" />
+        <e p="FmAddOrEditDivision.resx" t="Include" />
+        <e p="FmAddOrEditWorker.cs" t="Include" />
+        <e p="FmAddOrEditWorker.Designer.cs" t="Include" />
+        <e p="FmAddOrEditWorker.resx" t="Include" />
         <e p="FmMain.cs" t="Include" />
         <e p="FmMain.Designer.cs" t="Include" />
         <e p="FmMain.resx" t="Include" />
-        <e p="FNewOrChangeDivision.cs" t="Include" />
-        <e p="FNewOrChangeDivision.Designer.cs" t="Include" />
-        <e p="FNewOrChangeDivision.resx" t="Include" />
-        <e p="FNewOrChangeWorker.cs" t="Include" />
-        <e p="FNewOrChangeWorker.Designer.cs" t="Include" />
-        <e p="FNewOrChangeWorker.resx" t="Include" />
-        <e p="IRepository.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive" />
         <e p="Program.cs" t="Include" />
         <e p="Properties" t="Include">

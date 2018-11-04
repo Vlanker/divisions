@@ -11,13 +11,15 @@ namespace LocalDbQueriesLibrary
 
         private DivisionSQL()
         {
-            Console.WriteLine($"Connection to {Connection}");
+            
         }
 
         public static DivisionSQL Connect(string connection)
         {
+            
             divisionToSQL = new DivisionSQL();
             Connection = connection;
+            Console.WriteLine($"Connection to {Connection}");
             return divisionToSQL;
         }
         public static DataSet GetDivisions()

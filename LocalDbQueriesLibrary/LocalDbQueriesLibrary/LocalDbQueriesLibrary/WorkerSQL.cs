@@ -6,7 +6,7 @@ namespace LocalDbQueriesLibrary
 {
     public static class WorkerSQL
     {
-        public static DataSet GetWorkers(int divisionId)
+        public static DataSet GetWorkers(int departamentId)
         {
             using (DataSet data = new DataSet())
             {
@@ -17,7 +17,7 @@ namespace LocalDbQueriesLibrary
                         using (SqlCommand sqlCommand = new SqlCommand("Divisions.uspGetWorkers", connection))
                         {
                             sqlCommand.CommandType = CommandType.StoredProcedure;
-
+                            sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = departamentId;
                             adapter.SelectCommand = sqlCommand;
 
                             try
@@ -50,11 +50,9 @@ namespace LocalDbQueriesLibrary
             using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
 
-                const string sql = "INSERT INTO [Divisions].[Workers] (DepartamentID, PersNum, FullName, Birthday, HiringDay, Salary, ProfArea, Gender) VALUES (@DepartamentID, @PersNum, @FullName, @Birthday, @HiringDay, @Salary, @ProfArea, @Gender)";
-
-                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                using (SqlCommand sqlCommand = new SqlCommand("Division.uspAddWorker", connection))
                 {
-                    sqlCommand.CommandType = CommandType.Text;
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
 
                     sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = divisiontId;
                     sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = persNum;
@@ -65,6 +63,7 @@ namespace LocalDbQueriesLibrary
                     sqlCommand.Parameters.Add(new SqlParameter("@ProfArea", SqlDbType.NVarChar, 150)).Value = profArea;
                     sqlCommand.Parameters.Add(new SqlParameter("@Gender", SqlDbType.NVarChar, 4)).Value = gender;
                     sqlCommand.Parameters.Add(new SqlParameter("@RC", SqlDbType.Int)).Direction = ParameterDirection.ReturnValue;
+                   
                     try
                     {
                         connection.Open();
@@ -86,18 +85,17 @@ namespace LocalDbQueriesLibrary
 
             return result;
         }
-        public static bool Update(int id, int divisionID, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
+        public static bool Update(int id, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
         {
             bool result = false;
 
             using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
-                const string sql = "UPDATE [Divisions].[Workers] SET [DepartamentID] = @DepartamentID, [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [WorkerID] = @WorkerID";
+                const string sql = "UPDATE [Divisions].[Workers] SET [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [WorkerID] = @WorkerID";
 
                 using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                 {
                     sqlCommand.CommandType = CommandType.Text;
-                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = divisionID;
                     sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = persNum;
                     sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = fullName;
                     sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = birthday;

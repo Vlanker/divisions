@@ -9,61 +9,34 @@ using LocalDbQueriesLibrary;
 
 namespace Divisions.DAL.Repository
 {
-    class DivisionRepository : IRepository<Division>
+    class DivisionRepository
     {
         private DbContext context;
-        private static  DivisionRepository repos;
-        private DivisionRepository()
+               
+        public DivisionRepository()
         {
-            context = new DbContext();
+            context = DbContext.Context;
         }
 
-        internal static DivisionRepository GetRepository()
-        {
-            if (repos == null)
-            {
-                repos = new DivisionRepository();
-            }
-            return repos;
-        }
-        public void Create(Division division)
-        {
-            context.Add(division);
-        }
-        public bool Delete(Division division)
-        {
-            return context.Remove(division);
-        }
-        public void Edit(Division division)
-        {
-             context.Edit(division);
-        }
-        public Division GetById(int id)
-        {
-            return context.Find(id);
-        }
-        public List<Division> DivisionList()
-        {
-            return context.DivisionList();
-        }
-        public List<Division> GetDivisions()
+        internal List<Division> DivisionList()
         {
             return context.GetDivisions();
         }
-
-        internal void Create(string name)
+        //internal Division Division(int id)
+        //{
+        //    return context.GetDivisions().Find(d => d.Id == id);
+        //}
+        internal void Add(string name, int parentId)
         {
-            throw new NotImplementedException();
+            context.Add(name, parentId);
         }
-
-        internal void Create(string name, int parentid)
+        internal void Remove(Division division)
         {
-            throw new NotImplementedException();
+            context.Remove(division);
         }
-
-        internal void Edit(string name)
+        internal void Edit(Division division)
         {
-            throw new NotImplementedException();
+            context.Edit(division);
         }
     }
 }
