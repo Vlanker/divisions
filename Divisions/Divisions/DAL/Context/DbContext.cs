@@ -22,6 +22,11 @@ namespace Divisions.DAL.Context
             
         }
 
+        internal Worker GetWorker(int index)
+        {
+            return Workers.ElementAt(index);
+        }
+
         public static DbContext Context
         {
             get
@@ -38,14 +43,21 @@ namespace Divisions.DAL.Context
         {
             if (Divisions == null)
             {
-                using (DataSet ds = DivisionSQL.GetDivisions())
+                try
                 {
-                    Divisions = ds.Tables[0].AsEnumerable().Select(dataRow => new Division
+                    using (DataSet ds = DivisionSQL.GetDivisions())
                     {
-                        Id = dataRow.Field<int>("ID"),
-                        Name = dataRow.Field<string>("Name"),
-                        ParentId = dataRow.Field<int>("ParentID")
-                    }).ToList();
+                        Divisions = ds.Tables[0].AsEnumerable().Select(dataRow => new Division
+                        {
+                            Id = dataRow.Field<int>("ID"),
+                            Name = dataRow.Field<string>("Name"),
+                            ParentId = dataRow.Field<int>("ParentID")
+                        }).ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
                 }
             }
         }
@@ -71,12 +83,12 @@ namespace Divisions.DAL.Context
                         FullName = dataRow.Field<string>("FullName"),
                         Birthday = dataRow.Field<DateTime>("Birthday"),
                         HiringDay = dataRow.Field<DateTime>("HiringDay"),
-                        Salary = dataRow.Field<decimal>("Salary"),
+                        Salary = Decimal.Round(dataRow.Field<decimal>("Salary"), 2),
                         ProfArea = dataRow.Field<string>("ProfArea"),
                         Gender = dataRow.Field<string>("Gender")
                     }).ToList();
                 }
-                catch (Exception ex) { }
+                catch (Exception ex) { Console.WriteLine(ex); }
             }
         }
         internal List<Worker> GetWorkers(int divisionId)
@@ -104,36 +116,15 @@ namespace Divisions.DAL.Context
         }
         internal void Remove(Division division)
         {
-            try
-            {
-                RemoveWorkers(division.Id);
-                DivisionSQL.DeleteByParentId(division.Id);
-                DivisionSQL.DeleteById(division.Id);
-                Division deleteDivision = Divisions.Find(d => d.Id == division.Id);
-                Divisions.Remove(division);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            WorkerSQL.DeleteByDivisiontId(division.Id);
+            DivisionSQL.DeleteById(division.Id);
+            Division deleteDivision = Divisions.Find(d => d.Id == division.Id);
+            Divisions.Remove(division);
         }
         internal bool Remove(Worker worker)
         {
             WorkerSQL.DeleteById(worker.Id);
             return Workers.Remove(worker);
-        }
-        internal void RemoveWorkers(int divisionId)
-        {
-            try
-            {
-                WorkerSQL.DeleteByDivisiontId(divisionId);
-                Workers.RemoveAll(w => w.DivisionId == divisionId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            
         }
         internal void Add(string name, int parentId)
         {
@@ -143,7 +134,7 @@ namespace Divisions.DAL.Context
         internal void Add(int divisionId, string persNum, string fullName, string birthday, string hiringDay, decimal salary, string profArea, string gender)
         {
             int id = WorkerSQL.Add(divisionId, persNum, fullName, birthday, hiringDay, salary, profArea, gender);
-            Workers.Add(new Worker { Id = id, DivisionId = divisionId, PersNum = persNum, FullName = fullName, Birthday = Convert.ToDateTime(birthday), HiringDay = Convert.ToDateTime(hiringDay), Salary = salary,  ProfArea = profArea, Gender = gender});
+            Workers.Add(new Worker { Id = id, DivisionId = divisionId, PersNum = persNum, FullName = fullName, Birthday = Convert.ToDateTime(birthday), HiringDay = Convert.ToDateTime(hiringDay), Salary = Decimal.Round(salary, 2),  ProfArea = profArea, Gender = gender});
         }
     }
 }

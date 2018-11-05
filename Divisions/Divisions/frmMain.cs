@@ -12,11 +12,11 @@ namespace Divisions
 {
     public partial class frmMain : Form
     {
-        public frmMain()
+        internal frmMain()
         {
             InitializeComponent();
 
-            InitializeTVDivisions(new DivisionsViewModel().Divisions, null);
+            FillTVDivisions(new DivisionsViewModel().Divisions, null);
 
             tvDivisions.AfterSelect += tvDivisions_AfterSelect;
             if (tvDivisions.Nodes.Count == 0)
@@ -27,28 +27,31 @@ namespace Divisions
             btnChangeDivision.Enabled = true;
             btnDeleteDivision.Enabled = true;
         }
-
+        
+        //
+        //Работа с Division
+        //
         private void tvDivisions_AfterSelect(object sender, TreeViewEventArgs e)
         {
             int parentID = Convert.ToInt32(e.Node.Name);
-            int divisionId = Convert.ToInt32(e.Node.Tag);
+            
             if (parentID == 0)
             {
                 dgvWorkers.DataSource = null;
                 btnCreateWorker.Enabled = false;
                 btnChangeWorker.Enabled = false;
                 btnDeleteWorker.Enabled = false;
+                lb.Text = $"{e.Node.Text}";
                 return;
             }
-            dgvWorkers.AutoGenerateColumns = true;
-            var source = new WorkersViewModel(divisionId).Workers;
-            dgvWorkers.DataSource = source.ToArray();
+
+            FullDGVWokers();
             lb.Text = $"Работники: {e.Node.Text}";
             btnCreateWorker.Enabled = true;
             btnChangeWorker.Enabled = true;
             btnDeleteWorker.Enabled = true;
         }
-
+        
         private void btnAddDivision_Click(object sender, EventArgs e)
         {   
             //если никакой элемент не выбран, то добавить можно только новое Отделение
@@ -56,7 +59,7 @@ namespace Divisions
             {
                 Form frmNewRoot = new AddOrEditDivision();
                 frmNewRoot.ShowDialog();
-                ClearAndInitializeTVDivisions(new DivisionsViewModel().Divisions);
+                ClearAndFillTVDivisions(new DivisionsViewModel().Divisions);
                 return;
             }
             //Если выделен элемент, можно добавить как новое  Отделение, 
@@ -65,17 +68,17 @@ namespace Divisions
             
             Form frmNewDivElement = new AddOrEditDivision(selectedDivisionId);
             frmNewDivElement.ShowDialog();
-            ClearAndInitializeTVDivisions(new DivisionsViewModel().Divisions);
+            ClearAndFillTVDivisions(new DivisionsViewModel().Divisions);
         }
         private void btnEditDivision_Click(object sender, EventArgs e)
         {
             if (tvDivisions.SelectedNode != null)
             {
-                int idSelectednode = Convert.ToInt32(tvDivisions.SelectedNode.Tag);
-                Division division = new DivisionViewModel(idSelectednode).Division;
+
+                Division division = GetSelectedDivision();
                 Form updateDepartament = new AddOrEditDivision(division);
                 updateDepartament.ShowDialog();
-                ClearAndInitializeTVDivisions(new DivisionsViewModel().Divisions);
+                ClearAndFillTVDivisions(new DivisionsViewModel().Divisions);
             }
         }
         private void btnRemoveDivision_Click(object sender, EventArgs e)
@@ -83,20 +86,44 @@ namespace Divisions
             if (tvDivisions.SelectedNode != null)
             {
                 DialogResult dialogResult;
-                dialogResult = MessageBox.Show($"Вы уверены, что хотите удалить {tvDivisions.SelectedNode.Name}?", "Confirm Deletion", MessageBoxButtons.YesNo);
+                dialogResult = MessageBox.Show($"Вы уверены, что хотите удалить {tvDivisions.SelectedNode.Text}?", "Confirm Deletion", MessageBoxButtons.YesNo);
 
                 if (dialogResult == DialogResult.Yes)
                 {
-                    int id = (int)tvDivisions.SelectedNode.Tag;
-                    Division division = new DivisionViewModel(id).Division;
-                    new DivisionRepository().Remove(division);
-                    ClearAndInitializeTVDivisions(new DivisionsViewModel().Divisions);
+                    TreeNodeCollection division = tvDivisions.SelectedNode.Nodes;
+                    foreach (TreeNode d in division)
+                    {
+                        RemoveDivision(d);
+                        Remove(d);
+                    }
+
+                    Remove(tvDivisions.SelectedNode);
+                    dgvWorkers.DataSource = null;
+                    ClearAndFillTVDivisions(new DivisionsViewModel().Divisions);
                 }
             }
 
         }
+
+        private void RemoveDivision(TreeNode treeNode)
+            
+        {
+            foreach (TreeNode tn in treeNode.Nodes)
+            {
+                RemoveDivision(tn);
+                Remove(tn);
+            }
+            
+        }
+        private void Remove(TreeNode node)
+        {
+            int divisionId = Convert.ToInt32(node.Tag);
+            Division division = new DivisionViewModel(divisionId).Division;
+            new DivisionRepository().Remove(division);
+        }
+
         //treeview {Text = db.Name, Tag = db.ID } 
-        private void InitializeTVDivisions(List<Division> divisionList, TreeNode node)
+        private void FillTVDivisions(List<Division> divisionList, TreeNode node)
         {
             var parentID = node != null ? (int)node.Tag : 0;
             
@@ -108,48 +135,73 @@ namespace Divisions
                 newNode.Tag = item.Id;
                 newNode.Name = parentID.ToString();
 
-                InitializeTVDivisions(divisionList, newNode);
+                FillTVDivisions(divisionList, newNode);
             }
         }
-        private void ClearAndInitializeTVDivisions(List<Division> divisionList)
+        private void ClearAndFillTVDivisions(List<Division> divisionList)
         {
             tvDivisions.Nodes.Clear();
-            InitializeTVDivisions(divisionList, null);
+            FillTVDivisions(divisionList, null);
         }
-
-
+        private Division GetSelectedDivision()
+        {
+            int idSelectednode = Convert.ToInt32(tvDivisions.SelectedNode.Tag);
+            return new DivisionViewModel(idSelectednode).Division;
+        }
+        //
+        //Работа с Worker
+        //
         private void btnAddWorker_Click(object sender, EventArgs e)
         {
             int selectedDivisionId = Convert.ToInt32(tvDivisions.SelectedNode.Tag);
             Form frm = new AddOrEditWorker(selectedDivisionId);
             frm.ShowDialog();
+            FullDGVWokers();
+
         }
         private void btnEditWorker_Click(object sender, EventArgs e)
         {
-            //if (IndexSelectedRowValid())
-            //{
-            //    int id = Convert.ToInt32(tvDivisions.SelectedNode.Tag);
-            //    Worker worker = new WorkerViewModel(id).Worker;
-            //    Form frm = new AddOrEditWorker(worker);
-            //    frm.ShowDialog();
-               
-            //}
+            if (dgvWorkers.CurrentCell != null)
+            {
+
+                Worker editWorker = GetSelectedWorker();
+                Form frm = new AddOrEditWorker(editWorker);
+                frm.ShowDialog();
+                FullDGVWokers();
+            }
         }
         private void btnRemoveWorker_Click(object sender, EventArgs e)
         {
-            if (dgvWorkers.SelectedRows != null)
+            if (dgvWorkers.CurrentCell != null)
             {
                 DialogResult dialogResult;
                 dialogResult = MessageBox.Show("Вы уверены, что хотите удалить выбраного Работника?", "Confirm Deletion", MessageBoxButtons.YesNo);
 
                 if (dialogResult == DialogResult.Yes)
                 {
-                   //     
+                    Worker worker = GetSelectedWorker();
+                    new WorkerRepository().Remove(worker);
+                    FullDGVWokers();
                 }
 
             }
         }
+        private void FullDGVWokers()
+        {
+            int divisionId = Convert.ToInt32(tvDivisions.SelectedNode.Tag);
+            dgvWorkers.AutoGenerateColumns = true;
+            var source = new WorkersViewModel(divisionId).Workers;
+            dgvWorkers.DataSource = source.ToArray();
+        }
+        private Worker GetSelectedWorker()
+        {
+            int indexWorker = dgvWorkers.CurrentCell.RowIndex;
+            return new WorkerViewModel(indexWorker).Worker;
 
+        }
+        //
+        //F5 - обновление
+        //
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             bool bHandled = false;
@@ -157,7 +209,8 @@ namespace Divisions
             switch (keyData)
             {
                 case Keys.F5:
-                    ClearAndInitializeTVDivisions(new DivisionsViewModel().Divisions);
+                    ClearAndFillTVDivisions(new DivisionsViewModel().Divisions);
+                    dgvWorkers.DataSource = null;
                     bHandled = true;
                     break;
             }

@@ -136,66 +136,31 @@ namespace LocalDbQueriesLibrary
 
             using (SqlConnection connection = new SqlConnection(Connection))
             {
-                using (SqlDataAdapter adapter = new SqlDataAdapter())
+
+                const string sql = "DELETE FROM [Divisions].[Departaments] WHERE [ID] = @ID";
+
+                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                 {
-                    const string sql = "DELETE FROM [Divisions].[Departaments] WHERE [ID] = @ID";
+                    sqlCommand.CommandType = CommandType.Text;
+                    sqlCommand.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int)).Value = id;
 
-                    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+
+                    try
                     {
-                        sqlCommand.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int)).Value = id;
-
-                        adapter.DeleteCommand = sqlCommand;
-                        try
-                        {
-                            connection.Open();
-                            adapter.DeleteCommand.ExecuteNonQuery();
-                            result = true;
-                        }
-                        catch
-                        {
-                            result = false;
-                        }
-                        finally
-                        {
-                            connection.Close();
-                        }
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        result = true;
+                    }
+                    catch
+                    {
+                        result = false;
+                    }
+                    finally
+                    {
+                        connection.Close();
                     }
                 }
-            }
 
-            return result;
-        }
-        public static bool DeleteByParentId(int parentId)
-        {
-            bool result = false;
-
-            using (SqlConnection connection = new SqlConnection(Connection))
-            {
-                using (SqlDataAdapter adapter = new SqlDataAdapter())
-                {
-                    const string sql = "DELETE FROM [Divisions].[Departaments] WHERE [ParentID] = @ParentID";
-
-                    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
-                    {
-                        sqlCommand.Parameters.Add(new SqlParameter("@ParentID", SqlDbType.Int)).Value = parentId;
-
-                        adapter.DeleteCommand = sqlCommand;
-                        try
-                        {
-                            connection.Open();
-                            adapter.DeleteCommand.ExecuteNonQuery();
-                            result = true;
-                        }
-                        catch
-                        {
-                            result = false;
-                        }
-                        finally
-                        {
-                            connection.Close();
-                        }
-                    }
-                }
             }
 
             return result;

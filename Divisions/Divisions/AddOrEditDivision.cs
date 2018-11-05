@@ -66,6 +66,7 @@ namespace Divisions
             {
                 DivisionView.Name = tbName.Text;
                 new DivisionRepository().Edit(DivisionView);
+                this.Close();
             }
         }
         private bool IsTitleValid()

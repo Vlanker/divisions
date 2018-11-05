@@ -10,9 +10,9 @@ namespace Divisions.DAL.View_model
     class WorkerViewModel
     {
         internal Worker Worker { get; private set; }
-        internal WorkerViewModel(int workerId)
+        internal WorkerViewModel(int index)
         {
-           // Worker = new WorkerRepository().Worker;
+           Worker = new WorkerRepository().Worker(index);
         }
     }
 }

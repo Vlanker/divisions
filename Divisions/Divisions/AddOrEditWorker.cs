@@ -18,14 +18,14 @@ namespace Divisions
     public partial class AddOrEditWorker : Form
     {
         private int divisionId;
-        private Worker Worker { get; set; }
-        
-        public AddOrEditWorker()
+        private Worker WorkerView { get; set; }
+
+        internal AddOrEditWorker()
         {
             InitializeComponent();
         }
         //добавление нового
-        public AddOrEditWorker(int divisionId): this()
+        internal AddOrEditWorker(int divisionId): this()
         {
             this.divisionId = divisionId;
             btnComplite.Click += btnAddWorker_Click;
@@ -33,6 +33,23 @@ namespace Divisions
             dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             dtpBirthday.CustomFormat = " ";
             cbGender.SelectedIndex = 0;
+        }
+        //изменение
+        internal AddOrEditWorker(Worker worker) : this()
+        {
+            WorkerView = worker;
+            btnComplite.Click -= btnAddWorker_Click;
+            btnComplite.Click += btnUpdateWorker_Click;
+            FillComponents();
+           
+        }
+
+        private void dtpBirthday_ValueChanged(object sender, EventArgs e)
+        {
+            if (dtpBirthday.Format == System.Windows.Forms.DateTimePickerFormat.Custom)
+            {
+                dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            }
         }
 
         private void btnAddWorker_Click(object sender, EventArgs e)
@@ -47,6 +64,22 @@ namespace Divisions
                 string profArea = tbProfArea.Text;
                 string gender = cbGender.Text;
                 new WorkerRepository().Add(divisionId, persNum, fullName, birthday, hiringDay, salary, profArea, gender);
+            }
+        }
+        private void btnUpdateWorker_Click(object sender, EventArgs e)
+        {
+            if (IsTitlesValid())
+            {
+
+                WorkerView.PersNum = tbPersNum.Text;
+                WorkerView.FullName = tbFullName.Text;
+                WorkerView.Birthday = Convert.ToDateTime(dtpBirthday.Value.ToShortDateString());
+                WorkerView.HiringDay = Convert.ToDateTime(dtpHiringDay.Value.ToShortDateString());
+                WorkerView.Salary = Convert.ToDecimal(tbSalary.Text);
+                WorkerView.ProfArea = tbProfArea.Text;
+                WorkerView.Gender = cbGender.Text;
+                new WorkerRepository().Edit(WorkerView);
+                this.Close();
             }
         }
 
@@ -67,83 +100,15 @@ namespace Divisions
 
             return true;
         }
-
-        //public AddOrEditWorker(Worker worker): this()
-        //{
-        //    btnComplite.Click -= btnAddWorker_Click;
-        //    btnComplite.Click += btnUpdateWorker_Click;
-        //    Worker = worker;
-        //    FillComponents();
-        //}
-
         private void FillComponents()
         {
-            tbPersNum.Text = Worker.PersNum;
-            tbFullName.Text = Worker.FullName;
-            dtpBirthday.Value = Worker.Birthday;
-            dtpHiringDay.Value = Worker.HiringDay;
-            tbSalary.Text = Worker.Salary.ToString();
-            tbProfArea.Text = Worker.ProfArea;
-            cbGender.Text = Worker.Gender;
+            tbPersNum.Text = WorkerView.PersNum;
+            tbFullName.Text = WorkerView.FullName;
+            dtpBirthday.Value = WorkerView.Birthday;
+            dtpHiringDay.Value = WorkerView.HiringDay;
+            tbSalary.Text = WorkerView.Salary.ToString();
+            tbProfArea.Text = WorkerView.ProfArea;
+            cbGender.Text = WorkerView.Gender;
         }
-
-        
-        private void btnUpdateWorker_Click(object sender, EventArgs e)
-        {
-            if (IsTitlesValid())
-            {
-                //using (SqlConnection connection = new SqlConnection(Properties.Settings.Default.connString))
-                //{
-                //    const string sql = "UPDATE [Offices].[Workers] SET [StructureID] = @StructureID, [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [WorkerID] = @WorkerID";
-
-                //    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
-                //    {
-                //        sqlCommand.CommandType = CommandType.Text;
-                //        //sqlCommand.Parameters.Add(new SqlParameter("@StructureID", SqlDbType.Int)).Value = FmMain.StructureID;
-                //        sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = tbPersNum.Text;
-                //        sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = tbFullName.Text;
-                //        sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = dtpBirthday.Value.ToShortDateString();
-                //        sqlCommand.Parameters.Add(new SqlParameter("@HiringDay", SqlDbType.Date)).Value = dtpHiringDay.Value.ToShortDateString();
-                //        sqlCommand.Parameters.Add(new SqlParameter("@Salary", SqlDbType.Money)).Value = GetSalary();
-                //        sqlCommand.Parameters.Add(new SqlParameter("@ProfArea", SqlDbType.NVarChar, 150)).Value = tbProfArea.Text;
-                //        sqlCommand.Parameters.Add(new SqlParameter("@Gender", SqlDbType.Bit)).Value = Convert.ToBoolean(cbGender.SelectedIndex);
-                //        sqlCommand.Parameters.Add(new SqlParameter("@WorkerID", SqlDbType.Int)).Value = workerID;
-
-                //        try
-                //        {
-                //            connection.Open();
-                //            sqlCommand.ExecuteNonQuery();
-                //        }
-                //        catch
-                //        {
-                //            MessageBox.Show("Работник не изменён");
-                //        }
-                //        finally
-                //        {
-                //            connection.Close();
-                //        }
-                //    }
-                    
-                //}
-                this.Close();
-            }
-        }
-
-        private void dtpBirthday_ValueChanged(object sender, EventArgs e)
-        {
-            if (dtpBirthday.Format == System.Windows.Forms.DateTimePickerFormat.Custom)
-            {
-                dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            }
-        }
-        //private decimal GetSalary()
-        //{
-        //    if(tbSalary.Text == "" || Regex.IsMatch(tbSalary.Text, @"^\D*$"))
-        //    {
-        //        return 0;
-        //    }
-        //    return Convert.ToDecimal(tbSalary.Text);
-        //}
-        
-    }
+       }
 }

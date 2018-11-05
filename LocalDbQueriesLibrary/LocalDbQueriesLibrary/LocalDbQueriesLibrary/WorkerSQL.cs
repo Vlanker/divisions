@@ -43,42 +43,47 @@ namespace LocalDbQueriesLibrary
                 return data;
             }
         }
-        public static int Add(int divisiontId, string persNum, string fullName, string birthday, string hiringDay, decimal salary, string profArea, string gender)
+        public static int Add(int divisionId, string persNum, string fullName, string birthday, string hiringDay, decimal salary, string profArea, string gender)
         {
             int result = -1;
 
             using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
-
-                using (SqlCommand sqlCommand = new SqlCommand("Division.uspAddWorker", connection))
+                using (SqlDataAdapter adapter = new SqlDataAdapter())
                 {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    using (SqlCommand sqlCommand = new SqlCommand("Divisions.uspAddWorker", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
 
-                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = divisiontId;
-                    sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = persNum;
-                    sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = fullName;
-                    sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = birthday;
-                    sqlCommand.Parameters.Add(new SqlParameter("@HiringDay", SqlDbType.Date)).Value = hiringDay;
-                    sqlCommand.Parameters.Add(new SqlParameter("@Salary", SqlDbType.Money)).Value = salary;
-                    sqlCommand.Parameters.Add(new SqlParameter("@ProfArea", SqlDbType.NVarChar, 150)).Value = profArea;
-                    sqlCommand.Parameters.Add(new SqlParameter("@Gender", SqlDbType.NVarChar, 4)).Value = gender;
-                    sqlCommand.Parameters.Add(new SqlParameter("@RC", SqlDbType.Int)).Direction = ParameterDirection.ReturnValue;
-                   
-                    try
-                    {
-                        connection.Open();
-                        sqlCommand.ExecuteNonQuery();
+                        sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = divisionId;
+                        sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = persNum;
+                        sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = fullName;
+                        sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = birthday;
+                        sqlCommand.Parameters.Add(new SqlParameter("@HiringDay", SqlDbType.Date)).Value = hiringDay;
+                        sqlCommand.Parameters.Add(new SqlParameter("@Salary", SqlDbType.Money)).Value = salary;
+                        sqlCommand.Parameters.Add(new SqlParameter("@ProfArea", SqlDbType.NVarChar, 150)).Value = profArea;
+                        sqlCommand.Parameters.Add(new SqlParameter("@Gender", SqlDbType.NVarChar, 4)).Value = gender;
 
-                        result = (int)sqlCommand.Parameters["@RC"].Value;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                        
-                    }
-                    finally
-                    {
-                        connection.Close();
+                        sqlCommand.Parameters.Add(new SqlParameter("@RC", SqlDbType.Int)).Direction = ParameterDirection.ReturnValue;
+
+
+                        adapter.InsertCommand = sqlCommand;
+
+                        try
+                        {
+                            connection.Open();
+                            adapter.InsertCommand.ExecuteNonQuery();
+
+                            result = (int)adapter.InsertCommand.Parameters["@RC"].Value;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
+                        finally
+                        {
+                            connection.Close();
+                        }
                     }
                 }
             }
@@ -91,19 +96,20 @@ namespace LocalDbQueriesLibrary
 
             using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
-                const string sql = "UPDATE [Divisions].[Workers] SET [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [WorkerID] = @WorkerID";
+                const string sql = "UPDATE [Divisions].[Workers] SET [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [ID] = @ID";
 
                 using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                 {
                     sqlCommand.CommandType = CommandType.Text;
+                    sqlCommand.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int)).Value = id;
                     sqlCommand.Parameters.Add(new SqlParameter("@PersNum", SqlDbType.NVarChar, 50)).Value = persNum;
                     sqlCommand.Parameters.Add(new SqlParameter("@FullName", SqlDbType.NVarChar, 250)).Value = fullName;
-                    sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = birthday;
-                    sqlCommand.Parameters.Add(new SqlParameter("@HiringDay", SqlDbType.Date)).Value = hiringDay;
+                    sqlCommand.Parameters.Add(new SqlParameter("@Birthday", SqlDbType.Date)).Value = birthday.ToShortDateString();
+                    sqlCommand.Parameters.Add(new SqlParameter("@HiringDay", SqlDbType.Date)).Value = hiringDay.ToShortDateString();
                     sqlCommand.Parameters.Add(new SqlParameter("@Salary", SqlDbType.Money)).Value = salary;
                     sqlCommand.Parameters.Add(new SqlParameter("@ProfArea", SqlDbType.NVarChar, 150)).Value = profArea;
                     sqlCommand.Parameters.Add(new SqlParameter("@Gender", SqlDbType.NVarChar, 4)).Value = gender;
-                    sqlCommand.Parameters.Add(new SqlParameter("@WorkerID", SqlDbType.Int)).Value = id;
+                    
 
                     try
                     {
@@ -168,32 +174,30 @@ namespace LocalDbQueriesLibrary
 
             using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
             {
-                using (SqlDataAdapter adapter = new SqlDataAdapter())
+                const string sql = "DELETE FROM [Divisions].[Workers] WHERE [DepartamentID] = @DepartamentID";
+
+                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                 {
-                    const string sql = "DELETE FROM [Divisions].[Workers] WHERE [DepartamentID] = @DepartamentID";
+                    sqlCommand.CommandType = CommandType.Text;
+                    sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = divisionID;
 
-                    using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+
+                    try
                     {
-                        sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = divisionID;
-
-                        adapter.DeleteCommand = sqlCommand;
-                        try
-                        {
-                            connection.Open();
-                            adapter.DeleteCommand.ExecuteNonQuery();
-                            result = true;
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex);
-                            result = false;
-                        }
-                        finally
-                        {
-                            connection.Close();
-                        }
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        result = true;
+                    }
+                    catch
+                    {
+                        result = false;
+                    }
+                    finally
+                    {
+                        connection.Close();
                     }
                 }
+
             }
 
             return result;
