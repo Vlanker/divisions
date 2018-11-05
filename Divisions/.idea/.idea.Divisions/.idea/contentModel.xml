@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\vlank-h\.Rider2018.2\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\vlank-h\.Rider2018.2\system\resharper-host\local\Transient\ReSharperHost\v182\SolutionCaches\_Divisions.1709490176.00" t="ExcludeRecursive" />
+    <e p="K:\Repository\sourses\repos\_Division\Divisions" t="IncludeFlat">
+      <e p="Divisions" t="IncludeRecursive">
+        <e p="App.config" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="DAL" t="Include">
+          <e p="Context" t="Include">
+            <e p="DbContext.cs" t="Include" />
+          </e>
+          <e p="Division.cs" t="Include" />
+          <e p="Repository" t="Include">
+            <e p="DivisionRepository.cs" t="Include" />
+            <e p="IRepository.cs" t="Include" />
+          </e>
+        </e>
+        <e p="Divisions.csproj" t="IncludeRecursive" />
+        <e p="FmAddOrEditDivision.cs" t="Include" />
+        <e p="FmAddOrEditDivision.Designer.cs" t="Include" />
+        <e p="FmAddOrEditDivision.resx" t="Include" />
+        <e p="FmAddOrEditWorker.cs" t="Include" />
+        <e p="FmAddOrEditWorker.Designer.cs" t="Include" />
+        <e p="FmAddOrEditWorker.resx" t="Include" />
+        <e p="FmMain.cs" t="Include" />
+        <e p="FmMain.Designer.cs" t="Include" />
+        <e p="FmMain.resx" t="Include" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+          <e p="Resources.Designer.cs" t="Include" />
+          <e p="Resources.resx" t="Include" />
+          <e p="Settings.Designer.cs" t="Include" />
+          <e p="Settings.settings" t="Include" />
+        </e>
+      </e>
+      <e p="Divisions.sln" t="IncludeFlat" />
+      <e p="packages" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>
