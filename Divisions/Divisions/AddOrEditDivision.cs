@@ -17,8 +17,7 @@ namespace Divisions
 
     public partial class AddOrEditDivision : Form
     {
-        //private int ParentId { get; set; }
-        private Division DViewModel { get; set; }
+        private Division DivisionView { get; set; }
         //Добавление Отделения
         internal AddOrEditDivision()
         {
@@ -28,9 +27,9 @@ namespace Divisions
             btnAddBranch.Visible = true;
         }
         //Добавление Отделения или отдела/подотдела
-        internal AddOrEditDivision(int id) : this()
+        internal AddOrEditDivision(int divisionId) : this()
         {
-            DViewModel = new DivisionViewModel(id).Division; 
+            DivisionView = new DivisionViewModel(divisionId).Division; 
             btnAddBranch.Enabled = true;
         }
         //изменение
@@ -40,7 +39,7 @@ namespace Divisions
             btnAddBranch.Visible = false;
             btnUpdate.Visible = true;
             tbName.Text = division.Name;
-            DViewModel = division;
+            DivisionView = division;
         }
 
         private void btnAddAsRoot_Click(object sender, EventArgs e)
@@ -57,7 +56,7 @@ namespace Divisions
             if (IsTitleValid())
             {
                 string name = tbName.Text;
-                int parentId = DViewModel.Id;
+                int parentId = DivisionView.Id;
                 new DivisionRepository().Add(name, parentId);
             }
         }
@@ -65,8 +64,8 @@ namespace Divisions
         {
             if (IsTitleValid())
             {
-                DViewModel.Name = tbName.Text;
-                new DivisionRepository().Edit(DViewModel);
+                DivisionView.Name = tbName.Text;
+                new DivisionRepository().Edit(DivisionView);
             }
         }
         private bool IsTitleValid()

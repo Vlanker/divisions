@@ -140,10 +140,10 @@ namespace Divisions.DAL.Context
             int id = DivisionSQL.Add(name, parentId);
             Divisions.Add(new Division { Id = id, Name = name, ParentId = parentId});
         }
-        internal void Add(int divisionId, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
+        internal void Add(int divisionId, string persNum, string fullName, string birthday, string hiringDay, decimal salary, string profArea, string gender)
         {
             int id = WorkerSQL.Add(divisionId, persNum, fullName, birthday, hiringDay, salary, profArea, gender);
-            Workers.Add(new Worker { Id = id, DivisionId = divisionId, PersNum = persNum, FullName = fullName, Birthday = birthday, HiringDay = hiringDay, Salary = salary,  ProfArea = profArea, Gender = gender});
+            Workers.Add(new Worker { Id = id, DivisionId = divisionId, PersNum = persNum, FullName = fullName, Birthday = Convert.ToDateTime(birthday), HiringDay = Convert.ToDateTime(hiringDay), Salary = salary,  ProfArea = profArea, Gender = gender});
         }
     }
 }

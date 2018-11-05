@@ -11,22 +11,61 @@ using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using Divisions.DAL;
 using Divisions.DAL.View_model;
+using Divisions.DAL.Repository;
 
 namespace Divisions
 {
     public partial class AddOrEditWorker : Form
     {
+        private int divisionId;
         private Worker Worker { get; set; }
         
         public AddOrEditWorker()
         {
             InitializeComponent();
-
+        }
+        //добавление нового
+        public AddOrEditWorker(int divisionId): this()
+        {
+            this.divisionId = divisionId;
             btnComplite.Click += btnAddWorker_Click;
             dtpBirthday.ValueChanged += new System.EventHandler(dtpBirthday_ValueChanged);
             dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             dtpBirthday.CustomFormat = " ";
             cbGender.SelectedIndex = 0;
+        }
+
+        private void btnAddWorker_Click(object sender, EventArgs e)
+        {
+            if (IsTitlesValid())
+            {
+                string persNum = tbPersNum.Text;
+                string fullName = tbFullName.Text;
+                string birthday = dtpBirthday.Value.ToShortDateString();
+                string hiringDay = dtpHiringDay.Value.ToShortDateString();
+                decimal salary = Convert.ToDecimal(tbSalary.Text);
+                string profArea = tbProfArea.Text;
+                string gender = cbGender.Text;
+                new WorkerRepository().Add(divisionId, persNum, fullName, birthday, hiringDay, salary, profArea, gender);
+            }
+        }
+
+        private bool IsTitlesValid()
+        {
+            if (tbPersNum.Text == "" ||
+               tbFullName.Text == "" ||
+               dtpBirthday.Format == System.Windows.Forms.DateTimePickerFormat.Custom)
+            {
+                MessageBox.Show("Введите Табельный номер, ФИО и выберите Дату рождения.");
+                return false;
+            }
+            if (tbSalary.Text == "" || Regex.IsMatch(tbSalary.Text, @"^\D*$"))
+            {
+                MessageBox.Show("Введите зарплату.");
+                return false;
+            }
+
+            return true;
         }
 
         //public AddOrEditWorker(Worker worker): this()
@@ -48,15 +87,7 @@ namespace Divisions
             cbGender.Text = Worker.Gender;
         }
 
-        private void btnAddWorker_Click(object sender, EventArgs e)
-        {
-            if (IsTitlesValid())
-            {
-
-
-            }
-
-        }
+        
         private void btnUpdateWorker_Click(object sender, EventArgs e)
         {
             if (IsTitlesValid())
@@ -105,25 +136,14 @@ namespace Divisions
                 dtpBirthday.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             }
         }
-        private decimal GetSalary()
-        {
-            if(tbSalary.Text == "" || Regex.IsMatch(tbSalary.Text, @"^\D*$"))
-            {
-                return 0;
-            }
-            return Convert.ToDecimal(tbSalary.Text);
-        }
-        private bool IsTitlesValid()
-        {
-            if(tbPersNum.Text == ""  ||
-               tbFullName.Text == "" || 
-               dtpBirthday.Format == System.Windows.Forms.DateTimePickerFormat.Custom)
-            {
-                MessageBox.Show("Введите Табельный номер, ФИО и выберите Дату рождения.");
-                return false;
-            }
-            
-            return true;
-        }
+        //private decimal GetSalary()
+        //{
+        //    if(tbSalary.Text == "" || Regex.IsMatch(tbSalary.Text, @"^\D*$"))
+        //    {
+        //        return 0;
+        //    }
+        //    return Convert.ToDecimal(tbSalary.Text);
+        //}
+        
     }
 }

@@ -43,7 +43,7 @@ namespace LocalDbQueriesLibrary
                 return data;
             }
         }
-        public static int Add(int divisiontId, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
+        public static int Add(int divisiontId, string persNum, string fullName, string birthday, string hiringDay, decimal salary, string profArea, string gender)
         {
             int result = -1;
 

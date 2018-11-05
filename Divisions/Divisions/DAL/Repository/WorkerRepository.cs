@@ -11,7 +11,7 @@ namespace Divisions.DAL.Repository
     {
         private DbContext context;
 
-        public WorkerRepository()
+        internal WorkerRepository()
         {
             context = DbContext.Context;
         }
@@ -21,8 +21,7 @@ namespace Divisions.DAL.Repository
             
             return context.GetWorkers(divisionId);
         }
-        
-        internal void Add(int divisionId, string persNum, string fullName, DateTime birthday, DateTime hiringDay, decimal salary, string profArea, string gender)
+        internal void Add(int divisionId, string persNum, string fullName, string birthday, string hiringDay, decimal salary, string profArea, string gender)
         {
             context.Add(divisionId, persNum, fullName, birthday, hiringDay, salary, profArea, gender); 
         }

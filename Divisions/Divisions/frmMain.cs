@@ -59,11 +59,11 @@ namespace Divisions
                 ClearAndInitializeTVDivisions(new DivisionsViewModel().Divisions);
                 return;
             }
-            //Если выделен элемент, можно добавить как и новое  Отделение, 
+            //Если выделен элемент, можно добавить как новое  Отделение, 
             //так и новый Отдел/подотдел в Выбранный пункт
-            int idSelectedNode = Convert.ToInt32(tvDivisions.SelectedNode.Tag);
+            int selectedDivisionId = Convert.ToInt32(tvDivisions.SelectedNode.Tag);
             
-            Form frmNewDivElement = new AddOrEditDivision(idSelectedNode);
+            Form frmNewDivElement = new AddOrEditDivision(selectedDivisionId);
             frmNewDivElement.ShowDialog();
             ClearAndInitializeTVDivisions(new DivisionsViewModel().Divisions);
         }
@@ -120,7 +120,8 @@ namespace Divisions
 
         private void btnAddWorker_Click(object sender, EventArgs e)
         {
-            Form frm = new AddOrEditWorker();
+            int selectedDivisionId = Convert.ToInt32(tvDivisions.SelectedNode.Tag);
+            Form frm = new AddOrEditWorker(selectedDivisionId);
             frm.ShowDialog();
         }
         private void btnEditWorker_Click(object sender, EventArgs e)

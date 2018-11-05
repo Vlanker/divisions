@@ -13,7 +13,7 @@ namespace Divisions.DAL.Repository
     {
         private DbContext context;
                
-        public DivisionRepository()
+        internal DivisionRepository()
         {
             context = DbContext.Context;
         }
@@ -22,10 +22,6 @@ namespace Divisions.DAL.Repository
         {
             return context.GetDivisions();
         }
-        //internal Division Division(int id)
-        //{
-        //    return context.GetDivisions().Find(d => d.Id == id);
-        //}
         internal void Add(string name, int parentId)
         {
             context.Add(name, parentId);
