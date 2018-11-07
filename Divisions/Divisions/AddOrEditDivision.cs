@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
+
 using Divisions.DAL.Repository;
 using Divisions.DAL;
 using Divisions.DAL.View_model;
@@ -18,6 +18,7 @@ namespace Divisions
     public partial class AddOrEditDivision : Form
     {
         private Division DivisionView { get; set; }
+        private DivisionRepository divisionRepo = new DivisionRepository();
         //Добавление Отделения
         internal AddOrEditDivision()
         {
@@ -47,7 +48,7 @@ namespace Divisions
             if (IsTitleValid())
             {
                 string name = tbName.Text;
-                new DivisionRepository().Add(name, 0);
+                divisionRepo.Add(name, 0);
             }
             
         }
@@ -57,7 +58,7 @@ namespace Divisions
             {
                 string name = tbName.Text;
                 int parentId = DivisionView.Id;
-                new DivisionRepository().Add(name, parentId);
+                divisionRepo.Add(name, parentId);
             }
         }
         private void btnUpdate_Click(object sender, EventArgs e)
@@ -65,7 +66,7 @@ namespace Divisions
             if (IsTitleValid())
             {
                 DivisionView.Name = tbName.Text;
-                new DivisionRepository().Edit(DivisionView);
+                divisionRepo.Edit(DivisionView);
                 this.Close();
             }
         }

@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Divisions.DAL.Context;
 using LocalDbQueriesLibrary;
 
@@ -11,11 +12,11 @@ namespace Divisions.DAL.Repository
 {
     class DivisionRepository
     {
-        private DbContext context;
+        private MyDbContext context = MyDbContext.Context;
                
         internal DivisionRepository()
         {
-            context = DbContext.Context;
+            
         }
 
         internal List<Division> DivisionList()
@@ -30,6 +31,34 @@ namespace Divisions.DAL.Repository
         {
             context.Remove(division);
         }
+        internal void Remove(TreeNode division)
+        {
+            TreeNodeCollection nodes = division.Nodes;
+
+            foreach (TreeNode node in nodes)
+            {
+                RemoveNodes(node);
+                RemoveNode(node);
+            }
+
+            RemoveNode(division);
+
+        }
+        private void RemoveNodes(TreeNode treeNode)
+        {
+            foreach (TreeNode tree in treeNode.Nodes)
+            {
+                RemoveNodes(tree);
+                RemoveNode(tree);
+            }
+        }
+        private void RemoveNode(TreeNode node)
+        {
+            int divisionId = Convert.ToInt32(node.Tag);
+            Division division = context.GetDivisions().Find(d => d.Id == divisionId);
+            context.Remove(division);
+        }
+
         internal void Edit(Division division)
         {
             context.Edit(division);

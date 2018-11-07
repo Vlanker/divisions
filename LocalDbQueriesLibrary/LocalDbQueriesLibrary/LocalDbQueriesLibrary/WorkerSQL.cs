@@ -4,17 +4,37 @@ using System.Data.SqlClient;
 
 namespace LocalDbQueriesLibrary
 {
-    public static class WorkerSQL
+    public class WorkerSQL
     {
+        private const string CON_STR = @"Data Source=(LocalDb)\MSSQLLocalDb;Initial Catalog=Divisions;Integrated Security=True;Pooling=True";
+        private const string DB_NAME = "Divisions";
+        private const string TBL_NAME = "Workers";
+
+        private const string USP_GET = "uspGetWorkers";
+        private const string USP_ADD = "uspAddWorker";
+
+        private const string COL_ID = "ID";
+        private const string COL_DEP_ID = "DepartamentID";
+        private const string COL_PERS_NUM = "PersNum";
+        private const string COL_FULLNAME = "FullName";
+        private const string COL_BIRTHDAY = "Birthday";
+        private const string COL_HIRING_DAY = "HiringDay";
+        private const string COL_SALARY = "Salary";
+        private const string COL_RROF_AREA = "ProfArea";
+        private const string COL_GENDER = "Gender";
+        private WorkerSQL()
+        {
+            
+        }
         public static DataSet GetWorkers(int departamentId)
         {
             using (DataSet data = new DataSet())
             {
-                using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
+                using (SqlConnection connection = new SqlConnection(CON_STR))
                 {
                     using (SqlDataAdapter adapter = new SqlDataAdapter())
                     {
-                        using (SqlCommand sqlCommand = new SqlCommand("Divisions.uspGetWorkers", connection))
+                        using (SqlCommand sqlCommand = new SqlCommand($"{DB_NAME}.{USP_GET}", connection))
                         {
                             sqlCommand.CommandType = CommandType.StoredProcedure;
                             sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = departamentId;
@@ -47,11 +67,11 @@ namespace LocalDbQueriesLibrary
         {
             int result = -1;
 
-            using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
+            using (SqlConnection connection = new SqlConnection(CON_STR))
             {
                 using (SqlDataAdapter adapter = new SqlDataAdapter())
                 {
-                    using (SqlCommand sqlCommand = new SqlCommand("Divisions.uspAddWorker", connection))
+                    using (SqlCommand sqlCommand = new SqlCommand($"{DB_NAME}.{USP_ADD}", connection))
                     {
                         sqlCommand.CommandType = CommandType.StoredProcedure;
 
@@ -94,7 +114,7 @@ namespace LocalDbQueriesLibrary
         {
             bool result = false;
 
-            using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
+            using (SqlConnection connection = new SqlConnection(CON_STR))
             {
                 const string sql = "UPDATE [Divisions].[Workers] SET [PersNum] = @PersNum, [FullName] = @Fullname, [Birthday] = @Birthday, [HiringDay] = @HiringDay,  [Salary] = @Salary, [ProfArea] = @ProfArea, [Gender] = @Gender WHERE [ID] = @ID";
 
@@ -136,7 +156,7 @@ namespace LocalDbQueriesLibrary
         {
             bool result = false;
 
-            using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
+            using (SqlConnection connection = new SqlConnection(CON_STR))
             {
                 using (SqlDataAdapter adapter = new SqlDataAdapter())
                 {
@@ -172,7 +192,7 @@ namespace LocalDbQueriesLibrary
         {
             bool result = false;
 
-            using (SqlConnection connection = new SqlConnection(DivisionSQL.Connection))
+            using (SqlConnection connection = new SqlConnection(CON_STR))
             {
                 const string sql = "DELETE FROM [Divisions].[Workers] WHERE [DepartamentID] = @DepartamentID";
 
@@ -180,7 +200,6 @@ namespace LocalDbQueriesLibrary
                 {
                     sqlCommand.CommandType = CommandType.Text;
                     sqlCommand.Parameters.Add(new SqlParameter("@DepartamentID", SqlDbType.Int)).Value = divisionID;
-
 
                     try
                     {

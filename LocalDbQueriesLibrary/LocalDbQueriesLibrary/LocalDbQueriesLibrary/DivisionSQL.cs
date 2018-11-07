@@ -4,33 +4,36 @@ using System.Data;
 
 namespace LocalDbQueriesLibrary
 {
-    public class DivisionSQL
+    public class DivisionSQL 
     {
-        internal static string Connection { get; private set; }
+        private const string CON_STR = @"Data Source=(LocalDb)\MSSQLLocalDb;Initial Catalog=Divisions;Integrated Security=True;Pooling=True";
+        private const string DB_NAME = "Divisions";
+        private const string TBL_NAME = "Departaments";
+
+        private const string USP_GET = "uspGetDepartaments";
+        private const string USP_ADD = "uspAddDepartament";
+
+        private const string COL_ID = "ID";
+        private const string COL_NAME = "Name";
+        private const string COL_PARENTID = "ParentID";
+
+        
         private static DivisionSQL divisionToSQL;
 
         private DivisionSQL()
         {
-            
+           
         }
 
-        public static DivisionSQL Connect(string connection)
-        {
-            
-            divisionToSQL = new DivisionSQL();
-            Connection = connection;
-            Console.WriteLine($"Connection to {Connection}");
-            return divisionToSQL;
-        }
         public static DataSet GetDivisions()
         {
-            using (DataSet resultData = new DataSet())
+            using (DataSet data = new DataSet())
             {
-                using (SqlConnection connection = new SqlConnection(Connection))
+                using (SqlConnection connection = new SqlConnection(CON_STR))
                 {
                     using (SqlDataAdapter adapter = new SqlDataAdapter())
                     {
-                        using (SqlCommand sqlCommand = new SqlCommand("Divisions.uspGetDepartaments", connection))
+                        using (SqlCommand sqlCommand = new SqlCommand($"{DB_NAME}.{USP_GET}", connection))
                         {
                             sqlCommand.CommandType = CommandType.StoredProcedure;
 
@@ -41,7 +44,7 @@ namespace LocalDbQueriesLibrary
                                 connection.Open();
                                 adapter.SelectCommand.ExecuteNonQuery();
 
-                                adapter.Fill(resultData);
+                                adapter.Fill(data);
                             }
                             catch (Exception ex)
                             {
@@ -54,19 +57,18 @@ namespace LocalDbQueriesLibrary
                         }
                     }
                 }
-
-                return resultData;
+                return data;
             }
         }
         public static int Add(string name, int parentId)
         {
             int result = -1;
 
-            using (SqlConnection connection = new SqlConnection(Connection))
+            using (SqlConnection connection = new SqlConnection(CON_STR))
             {
                 using (SqlDataAdapter adapter = new SqlDataAdapter())
                 {
-                    using (SqlCommand sqlCommand = new SqlCommand("Divisions.uspAddDepartament", connection))
+                    using (SqlCommand sqlCommand = new SqlCommand($"{DB_NAME}.{USP_ADD}", connection))
                     {
                         sqlCommand.CommandType = CommandType.StoredProcedure;
 
@@ -100,9 +102,9 @@ namespace LocalDbQueriesLibrary
         {
             bool result = false;
 
-            using (SqlConnection connection = new SqlConnection(Connection))
+            using (SqlConnection connection = new SqlConnection(CON_STR))
             {
-                const string sql = "UPDATE [Divisions].[Departaments] SET [Name] = @Name WHERE [ID] = @ID";
+                const string sql = "UPDATE [Division].[Departament] SET [Name] = @Name WHERE [ID] = @ID";
 
                 using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
                 {
@@ -134,7 +136,7 @@ namespace LocalDbQueriesLibrary
         {
             bool result = false;
 
-            using (SqlConnection connection = new SqlConnection(Connection))
+            using (SqlConnection connection = new SqlConnection(CON_STR))
             {
 
                 const string sql = "DELETE FROM [Divisions].[Departaments] WHERE [ID] = @ID";

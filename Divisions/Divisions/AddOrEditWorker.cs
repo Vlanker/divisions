@@ -7,10 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using Divisions.DAL;
-using Divisions.DAL.View_model;
 using Divisions.DAL.Repository;
 
 namespace Divisions
@@ -19,6 +17,7 @@ namespace Divisions
     {
         private int divisionId;
         private Worker WorkerView { get; set; }
+        private WorkerRepository workerRepo = new WorkerRepository();
 
         internal AddOrEditWorker()
         {
@@ -63,7 +62,7 @@ namespace Divisions
                 decimal salary = Convert.ToDecimal(tbSalary.Text);
                 string profArea = tbProfArea.Text;
                 string gender = cbGender.Text;
-                new WorkerRepository().Add(divisionId, persNum, fullName, birthday, hiringDay, salary, profArea, gender);
+                workerRepo.Add(divisionId, persNum, fullName, birthday, hiringDay, salary, profArea, gender);
             }
         }
         private void btnUpdateWorker_Click(object sender, EventArgs e)
@@ -78,7 +77,7 @@ namespace Divisions
                 WorkerView.Salary = Convert.ToDecimal(tbSalary.Text);
                 WorkerView.ProfArea = tbProfArea.Text;
                 WorkerView.Gender = cbGender.Text;
-                new WorkerRepository().Edit(WorkerView);
+                workerRepo.Edit(WorkerView);
                 this.Close();
             }
         }

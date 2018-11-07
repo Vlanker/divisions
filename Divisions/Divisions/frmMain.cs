@@ -12,6 +12,8 @@ namespace Divisions
 {
     public partial class frmMain : Form
     {
+        private DivisionRepository divisionRepo = new DivisionRepository();
+        private WorkerRepository workerRepo = new WorkerRepository();
         internal frmMain()
         {
             InitializeComponent();
@@ -60,6 +62,7 @@ namespace Divisions
                 Form frmNewRoot = new AddOrEditDivision();
                 frmNewRoot.ShowDialog();
                 ClearAndFillTVDivisions(new DivisionsViewModel().Divisions);
+                lb.Text = "Добавлено";
                 return;
             }
             //Если выделен элемент, можно добавить как новое  Отделение, 
@@ -69,6 +72,8 @@ namespace Divisions
             Form frmNewDivElement = new AddOrEditDivision(selectedDivisionId);
             frmNewDivElement.ShowDialog();
             ClearAndFillTVDivisions(new DivisionsViewModel().Divisions);
+            lb.Text = "Добавлено";
+
         }
         private void btnEditDivision_Click(object sender, EventArgs e)
         {
@@ -79,6 +84,8 @@ namespace Divisions
                 Form updateDepartament = new AddOrEditDivision(division);
                 updateDepartament.ShowDialog();
                 ClearAndFillTVDivisions(new DivisionsViewModel().Divisions);
+                lb.Text = "Изменено";
+
             }
         }
         private void btnRemoveDivision_Click(object sender, EventArgs e)
@@ -90,40 +97,24 @@ namespace Divisions
 
                 if (dialogResult == DialogResult.Yes)
                 {
-                    TreeNodeCollection division = tvDivisions.SelectedNode.Nodes;
-                    foreach (TreeNode d in division)
-                    {
-                        RemoveDivision(d);
-                        Remove(d);
-                    }
-
-                    Remove(tvDivisions.SelectedNode);
+                    divisionRepo.Remove(tvDivisions.SelectedNode);
                     dgvWorkers.DataSource = null;
                     ClearAndFillTVDivisions(new DivisionsViewModel().Divisions);
+                    lb.Text = "Удаленно";
                 }
             }
 
         }
+    
+    private void Remove(TreeNode node)
+    {
+        int divisionId = Convert.ToInt32(node.Tag);
+        Division division = new DivisionViewModel(divisionId).Division;
+            divisionRepo.Remove(division);
+    }
 
-        private void RemoveDivision(TreeNode treeNode)
-            
-        {
-            foreach (TreeNode tn in treeNode.Nodes)
-            {
-                RemoveDivision(tn);
-                Remove(tn);
-            }
-            
-        }
-        private void Remove(TreeNode node)
-        {
-            int divisionId = Convert.ToInt32(node.Tag);
-            Division division = new DivisionViewModel(divisionId).Division;
-            new DivisionRepository().Remove(division);
-        }
-
-        //treeview {Text = db.Name, Tag = db.ID } 
-        private void FillTVDivisions(List<Division> divisionList, TreeNode node)
+    //treeview {Text = db.Name, Tag = db.ID } 
+    private void FillTVDivisions(List<Division> divisionList, TreeNode node)
         {
             var parentID = node != null ? (int)node.Tag : 0;
             
@@ -157,6 +148,8 @@ namespace Divisions
             Form frm = new AddOrEditWorker(selectedDivisionId);
             frm.ShowDialog();
             FullDGVWokers();
+            lb.Text = "Добавлен";
+
 
         }
         private void btnEditWorker_Click(object sender, EventArgs e)
@@ -168,6 +161,8 @@ namespace Divisions
                 Form frm = new AddOrEditWorker(editWorker);
                 frm.ShowDialog();
                 FullDGVWokers();
+                lb.Text = "Изменён";
+
             }
         }
         private void btnRemoveWorker_Click(object sender, EventArgs e)
@@ -180,8 +175,10 @@ namespace Divisions
                 if (dialogResult == DialogResult.Yes)
                 {
                     Worker worker = GetSelectedWorker();
-                    new WorkerRepository().Remove(worker);
+                    workerRepo.Remove(worker);
                     FullDGVWokers();
+                    lb.Text = "Удалён";
+
                 }
 
             }

@@ -9,11 +9,11 @@ namespace Divisions.DAL.Repository
 {
     class WorkerRepository
     {
-        private DbContext context;
+        private MyDbContext context = MyDbContext.Context;
 
         internal WorkerRepository()
         {
-            context = DbContext.Context;
+            
         }
 
         internal List<Worker> WorkerList(int divisionId)
@@ -21,12 +21,10 @@ namespace Divisions.DAL.Repository
             
             return context.GetWorkers(divisionId);
         }
-
         internal Worker Worker(int index)
         {
             return context.GetWorker(index);
         }
-
         internal void Add(int divisionId, string persNum, string fullName, string birthday, string hiringDay, decimal salary, string profArea, string gender)
         {
             context.Add(divisionId, persNum, fullName, birthday, hiringDay, salary, profArea, gender); 
